@@ -5,7 +5,7 @@ RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
 
 for run=1:nrun 
 maxi=10000000; % Maximum number of iterations to run.
-tend=60; %240; % Maximum time for simulation.
+tend=40; %240; % Maximum time for simulation.
 format compact 
 % rand('state',sum(100*clock)) 
 rand('state',run) % Sets random number generator to a specific state.

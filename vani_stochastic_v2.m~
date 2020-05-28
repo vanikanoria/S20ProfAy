@@ -209,54 +209,11 @@ end
       for ck=1:2    
           for s1col=1:length(s1(ck,:))
           if s1(ck,s1col)>0
-              s1(ck,s1col)=s1(ck,s1col)-Delta;
-          end
-          end
-          
-          for s2col=1:length(s2(ck,:))
-          if s2(ck,s2col)>0
-              s2(ck,s2col)=s2(ck,s2col)-Delta;
-          end
-          end
-          
-          for s3col=1:length(s3(ck,:))
-          if s3(ck,s3col)>0
-              s3(ck,s3col)=s3(ck,s3col)-Delta;
-          end
-          end
-          
-          for s4col=1:length(s4(ck,:))
-          if s4(ck,s1col)>0
-              s4(ck,s4col)=s4(ck,s4col)-Delta;
-          end
-          end
-          
-          for s5col=1:length(s5(ck,:))
-          if s5(ck,s5col)>0
-              s5(ck,s5col)=s5(ck,s5col)-Delta;
-          end
-          end
-          
-          for s6col=1:length(s6(ck,:))
-          if s6(ck,s6col)>0
-              s6(ck,s6col)=s6(ck,s6col)-Delta;
-          end
-          end
-          
-          for s7col=1:length(s7(ck,:))
-          if s7(ck,s7col)>0
-              s7(ck,s7col)=s7(ck,s7col)-Delta;
-          end
-          end
-          
-          for s8col=1:length(s8(ck,:))
-          if s8(ck,s8col)>0
-              s8(ck,s8col)=s8(ck,s8col)-Delta;
+              s1(ck,s1col)=s1(ck,c1col)-Delta;
           end
           end
       end
-     
-      
+      s1 = s1 - Delta; % Reaction 1
      s2 = s2 - Delta; % Reaction 2
      s3 = s3 - Delta; % Reaction 3
      s4 = s4 - Delta; % Reaction 4

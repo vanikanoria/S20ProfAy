@@ -7,7 +7,7 @@ RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
 
 for run=1:nrun 
 maxi=10000000; % Maximum number of iterations to run.
-tend=20; %240; % Maximum time for simulation.
+tend=60; %240; % Maximum time for simulation.
 format compact 
 % rand('state',sum(100*clock)) 
 rand('state',run) % Sets random number generator to a specific state.
@@ -135,10 +135,10 @@ for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
 % 9-34: non-delayed reactions
 
 for ck=1:2
-    a(ck,1) = psh1*mh1(ck); % Reaction 01: mh1 -> ph1
-    a(ck,2) = psh7*mh7(ck);% // Reaction 09: mh7 -> ph7
-    a(ck,3) = psh6*mh6(ck); % // Reaction 15: mh6 -> ph6
-    a(ck,4) = psd*md(ck); % // Reaction 25: md -> pd
+    a(ck,1) = psh1*mh1; % Reaction 01: mh1 -> ph1
+    a(ck,2) = psh7*mh7;% // Reaction 09: mh7 -> ph7
+    a(ck,3) = psh6*mh6; % // Reaction 15: mh6 -> ph6
+    a(ck,4) = psd*md; % // Reaction 25: md -> pd
     %a(27) = fh1(msh1, ph11, ph76, pd(), critph, critpd); % // Reaction 27: -> mh1
     a(ck,5)=fh1(ck); % // Reaction 27: -> mh1
     %a(29) = fh7(msh7, ph11, ph76, pd(), critph, critpd); % // Reaction 29: -> mh7
@@ -146,32 +146,32 @@ for ck=1:2
     a(ck,7) = psh6; % // Reaction 31: -> mh6
     %a(33) = fd(msd, ph11, ph76, critph, critpd); % // Reaction 33: -> md
     a(ck,8)=fd(ph11(ck),ph76(ck));% // Reaction 33: -> md
-    a(ck,9) = pdh1*ph1(ck); % Reaction 02: ph1 ->
-    a(ck,10) = pdh7*ph7(ck);% // Reaction 10: ph7 ->
-    a(ck,11) = dah7h7*ph7(ck)*(ph7(ck)-1)/2;% // Reaction 11: ph7+ph7 -> ph77
-    a(ck,12) = ddh7h7*ph77(ck); % // Reaction 12: ph77 -> ph7+ph7
-    a(ck,13) = dah7h6*ph7(ck)*ph6(ck);% // Reaction 6: ph7+ph6 -> ph76
-    a(ck,14) = ddh7h6*ph76(ck); % // Reaction 14: ph76 -> ph7+ph6
-    a(ck,15) = dah1h1*ph1(ck)*(ph1(ck)-1)/2; % Reaction 03: ph1+ph1 -> ph11
-    a(ck,16) = pdh6*ph6(ck); % // Reaction 16: ph6 ->
-    a(ck,17) = dah6h6*ph6(ck)*(ph6(ck)-1)/2; % // Reaction 17: ph6+ph6 -> ph66
-    a(ck,18) = ddh6h6*ph66(ck); % // Reaction 18: ph66 -> ph6+ph6
-    a(ck,19) = pdh1*ph11(ck); % // Reaction 19: ph11 ->
-    a(ck,20) = pdh1*ph17(ck); % // Reaction 20: ph17 ->
-    a(ck,21) = pdh1*ph16(ck); % // Reaction 21: ph16 ->
-    a(ck,22) = pdh1*ph77(ck); % // Reaction 22: ph77 ->
-    a(ck,23) = pdh1*ph76(ck); % // Reaction 23: ph76 ->
-    a(ck,24) = pdh1*ph66(ck); % // Reaction 24: ph66 ->
-    a(ck,25) = ddh1h1*ph11(ck); %  Reaction 04: ph11 -> ph1+ph1
-    a(ck,26) = pdd*pd(ck); % // Reaction 26: pd ->
-    a(ck,27) = dah1h7*ph1(ck)*ph7(ck); % Reaction 05: ph1+ph7 -> ph17
-    a(ck,28) = mdh1*mh1(ck); % // Reaction 28: mh1 ->
-    a(ck,29) = ddh1h7*ph17(ck); % Reaction 06: ph17 -> ph1+ph7
-    a(ck,30) = mdh7*mh7(ck); % // Reaction 30: mh7 ->
-    a(ck,31) = dah1h6*ph1(ck)*ph6(ck); % // Reaction 07: ph1+ph6 -> ph16
-    a(ck,32) = mdh6*mh6(ck); %) // Reaction 32: mh6 ->
-    a(ck,33) = ddh1h6*ph16(ck);% // Reaction 08: ph16 -> ph1+ph6
-    a(ck,34) = mdd*md(ck); %// Reaction 34: md ->
+    a(ck,9) = pdh1*ph1; % Reaction 02: ph1 ->
+    a(ck,10) = pdh7*ph7;% // Reaction 10: ph7 ->
+    a(ck,11) = dah7h7*ph7*(ph7-1)/2;% // Reaction 11: ph7+ph7 -> ph77
+    a(ck,12) = ddh7h7*ph77; % // Reaction 12: ph77 -> ph7+ph7
+    a(ck,13) = dah7h6*ph7*ph6;% // Reaction 6: ph7+ph6 -> ph76
+    a(ck,14) = ddh7h6*ph76; % // Reaction 14: ph76 -> ph7+ph6
+    a(ck,15) = dah1h1*ph1*(ph1-1)/2; % Reaction 03: ph1+ph1 -> ph11
+    a(ck,16) = pdh6*ph6; % // Reaction 16: ph6 ->
+    a(ck,17) = dah6h6*ph6*(ph6-1)/2; % // Reaction 17: ph6+ph6 -> ph66
+    a(ck,18) = ddh6h6*ph66; % // Reaction 18: ph66 -> ph6+ph6
+    a(ck,19) = pdh1*ph11; % // Reaction 19: ph11 ->
+    a(ck,20) = pdh1*ph17; % // Reaction 20: ph17 ->
+    a(ck,21) = pdh1*ph16; % // Reaction 21: ph16 ->
+    a(ck,22) = pdh1*ph77; % // Reaction 22: ph77 ->
+    a(ck,23) = pdh1*ph76; % // Reaction 23: ph76 ->
+    a(ck,24) = pdh1*ph66; % // Reaction 24: ph66 ->
+    a(ck,25) = ddh1h1*ph11; %  Reaction 04: ph11 -> ph1+ph1
+    a(ck,26) = pdd*pd; % // Reaction 26: pd ->
+    a(ck,27) = dah1h7*ph1*ph7; % Reaction 05: ph1+ph7 -> ph17
+    a(ck,28) = mdh1*mh1; % // Reaction 28: mh1 ->
+    a(ck,29) = ddh1h7*ph17; % Reaction 06: ph17 -> ph1+ph7
+    a(ck,30) = mdh7*mh7; % // Reaction 30: mh7 ->
+    a(ck,31) = dah1h6*ph1*ph6; % // Reaction 07: ph1+ph6 -> ph16
+    a(ck,32) = mdh6*mh6; %) // Reaction 32: mh6 ->
+    a(ck,33) = ddh1h6*ph16;% // Reaction 08: ph16 -> ph1+ph6
+    a(ck,34) = mdd*md; %// Reaction 34: md ->
     
 end
 
@@ -195,68 +195,17 @@ end
   
   % potential no. of reactions = 34+8+34+8
   
-  if RN>=1 && RN<=42 %this is if the reaction is in cell 1
+  if RN<=42 %this is if the reaction is in cell 1
       ck=1;
       cn=2; % other cell is cell 2
-  elseif RN>=1 %the reaction is in cell 2 
+  else %the reaction is in cell 2 
       ck=2; 
       cn=1; %other cell is cell 1
       RN=RN-42;
   end
   
   if RN>=1 && RN<=42 % 26 non-delayed reactions + 2*8 for delayed reactions 
-      
-      for ck=1:2    
-          for s1col=1:length(s1(ck,:))
-          if s1(ck,s1col)>0
-              s1(ck,s1col)=s1(ck,s1col)-Delta;
-          end
-          end
-          
-          for s2col=1:length(s2(ck,:))
-          if s2(ck,s2col)>0
-              s2(ck,s2col)=s2(ck,s2col)-Delta;
-          end
-          end
-          
-          for s3col=1:length(s3(ck,:))
-          if s3(ck,s3col)>0
-              s3(ck,s3col)=s3(ck,s3col)-Delta;
-          end
-          end
-          
-          for s4col=1:length(s4(ck,:))
-          if s4(ck,s1col)>0
-              s4(ck,s4col)=s4(ck,s4col)-Delta;
-          end
-          end
-          
-          for s5col=1:length(s5(ck,:))
-          if s5(ck,s5col)>0
-              s5(ck,s5col)=s5(ck,s5col)-Delta;
-          end
-          end
-          
-          for s6col=1:length(s6(ck,:))
-          if s6(ck,s6col)>0
-              s6(ck,s6col)=s6(ck,s6col)-Delta;
-          end
-          end
-          
-          for s7col=1:length(s7(ck,:))
-          if s7(ck,s7col)>0
-              s7(ck,s7col)=s7(ck,s7col)-Delta;
-          end
-          end
-          
-          for s8col=1:length(s8(ck,:))
-          if s8(ck,s8col)>0
-              s8(ck,s8col)=s8(ck,s8col)-Delta;
-          end
-          end
-      end
-     
-      
+      s1 = s1 - Delta; % Reaction 1
      s2 = s2 - Delta; % Reaction 2
      s3 = s3 - Delta; % Reaction 3
      s4 = s4 - Delta; % Reaction 4
@@ -264,7 +213,6 @@ end
      s6 = s6 - Delta; % Reaction 6
      s7 = s7 - Delta; % Reaction 7
      s8 = s8 - Delta; % Reaction 8
-     
      T=T+Delta;
   end
   
@@ -313,8 +261,6 @@ end
   end
   
   if RN==42 % // Reaction 8: -> md
-      disp('ending...')
-      disp(s8)
      md=md+1; 
      s8(ck,:)=s8(ck,2:Td8(ck)); 
      Td8(ck)=Td8(ck)-1;
@@ -328,45 +274,42 @@ end
   end
   
   if RN==1 % Reaction 1: mh1 -> ph1
-     s1(ck,1:end+1) = [s1(ck,1:Td1(ck) - 1), nph1, inf];
+     s1(ck,:) = [s1(ck,1:Td1(ck) - 1), nph1, inf];
      Td1(ck)=Td1(ck)+1;
   end
       
   if RN==2 % Reaction 2: mh7 -> ph7
-     s2(ck,1:end+1) = [s2(ck,1:Td2(ck) - 1), nph7, inf];
+     s2(ck,:) = [s2(ck,1:Td2(ck) - 1), nph7, inf];
      Td2(ck)=Td2(ck)+1;
   end 
       
   if RN==3 %// Reaction 3: mh6 -> ph6
-     s3(ck,1:end+1) = [s3(ck,1:Td3(ck) - 1), nph6, inf]; 
+     s3(ck,:) = [s3(ck,1:Td3(ck) - 1), nph6, inf]; 
      Td3(ck) = Td3(ck) + 1;
   end
   
   if RN==4 % // Reaction 4: md -> pd
-     s4(ck,1:end+1) = [s4(ck,1:Td4(ck) - 1), npd, inf]; 
+     s4(ck,:) = [s4(ck,1:Td4(ck) - 1), npd, inf]; 
      Td4(ck) = Td4(ck) + 1;
   end
   
   if RN==5 % // Reaction 5: -> mh1 
-     s5(ck,1:end+1) = [s5(ck,1:Td5(ck) - 1), nmh1, inf]; 
+     s5(ck,:) = [s5(ck,1:Td5(ck) - 1), nmh1, inf]; 
      Td5(ck) = Td5(ck) + 1;
   end
   
   if RN==6 % Reaction 6: -> mh7
-     s6(ck,1:end+1) = [s6(ck,1:Td6(ck) - 1), nmh7, inf]; 
+     s6(ck,:) = [s6(ck,1:Td6(ck) - 1), nmh7, inf]; 
      Td6(ck) = Td6(ck) + 1;
   end
   
   if RN==7  % Reaction 7: -> mh6
-     s7(ck,1:end+1) = [s7(ck,1:Td7(ck) - 1), nmh6, inf]; 
+     s7(ck,:) = [s7(ck,1:Td7(ck) - 1), nmh6, inf]; 
      Td7(ck) = Td7(ck) + 1;
   end
   
   if RN==8 % // Reaction 8: -> md 
-      disp('starting...')
-      disp(s8)
-      disp(Td8)
-     s8(ck,1:end+1) = [s8(ck,1:(Td8(ck) - 1)), nmd, inf]; 
+     s8(ck,:) = [s8(ck,1:Td8(ck) - 1), nmd, inf]; 
      Td8(ck) = Td8(ck) + 1;
   end
   
@@ -450,10 +393,8 @@ end
   end
     
     Time=[Time T]; % Store time, and mh1 and mh7 levels.
-    mh1v_c1=[mh1v_c1 mh1(1)];
-    mh1v_c2=[mh1v_c2 mh1(2)];
-    mh7v_c1=[mh7v_c1 mh7(1)];
-    mh7v_c2=[mh7v_c2 mh7(2)];
+    mh1v=[mh1v mh1];
+    mh7v=[mh7v mh7];
 end % for i=1:maxi-1,
 
 Data = [Time' mh1v_c1' mh7v_c1' mh1v_c2' mh7v_c2'];
@@ -487,9 +428,3 @@ end
 Stats=table(RHO1, PVAL1, RHO2, PVAL2,'VariableNames', {'Pearson', 'PearSig','Spearman','SpearSig'});
 writetable(Stats, strcat('Run_v2_PearsonSpearman.xlsx'),'WriteVariableNames', true);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-      
-      
-      
-      
-      
