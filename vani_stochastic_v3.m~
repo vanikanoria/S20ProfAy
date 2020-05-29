@@ -70,19 +70,14 @@ mh7v_c2=[0]; % Her7 mRNA levels -> cell 2
 % row 1 -> cell 1
 % row 2 -> cell 2
 
-s = cell(2,8,1);
-each_cell={inf};
-% Time for each delayed reaction is scheduled in these vectors.
-s(:,:)=each_cell;
-
-% s1 = [inf;inf];
-% s2 = [inf;inf];
-% s3 = [inf;inf];
-% s4 = [inf;inf];
-% s5 = [inf;inf];
-% s6 = [inf;inf];
-% s7 = [inf;inf];
-% s8 = [inf;inf];
+s1 = [inf;inf]; % Time for each delayed reaction is scheduled in these vectors.
+s2 = [inf;inf];
+s3 = [inf;inf];
+s4 = [inf;inf];
+s5 = [inf;inf];
+s6 = [inf;inf];
+s7 = [inf;inf];
+s8 = [inf;inf];
 Td1 = [1;1]; % Number of scheduled delayed reactions.
 Td2 = [1;1];
 Td3 = [1;1];
@@ -184,64 +179,64 @@ end
       cn=1; %other cell is cell 1
       RN=RN-24;
   end
-%   
-%   if RN>=1 && RN<=42 % 26 non-delayed reactions + 2*8 for delayed reactions 
-%       s1 = s1 - Delta; % Reaction 1
-%      s2 = s2 - Delta; % Reaction 2
-%      s3 = s3 - Delta; % Reaction 3
-%      s4 = s4 - Delta; % Reaction 4
-%      s5 = s5 - Delta; % Reaction 5
-%      s6 = s6 - Delta; % Reaction 6
-%      s7 = s7 - Delta; % Reaction 7
-%      s8 = s8 - Delta; % Reaction 8
-%      T=T+Delta;
-%   end
+  
+  if RN>=1 && RN<=42 % 26 non-delayed reactions + 2*8 for delayed reactions 
+      s1 = s1 - Delta; % Reaction 1
+     s2 = s2 - Delta; % Reaction 2
+     s3 = s3 - Delta; % Reaction 3
+     s4 = s4 - Delta; % Reaction 4
+     s5 = s5 - Delta; % Reaction 5
+     s6 = s6 - Delta; % Reaction 6
+     s7 = s7 - Delta; % Reaction 7
+     s8 = s8 - Delta; % Reaction 8
+     T=T+Delta;
+  end
   
   % Delayed reactions being completed if necessary.
   % cell 1
-  if RN==17 % Reaction 1 for cell 1: mh1 -> ph1	
+  if RN==35 % Reaction 1 for cell 1: mh1 -> ph1	
      ph1=ph1+1;
      s1(ck,:)=s1(ck,2:Td1(ck));
      Td1(ck)=Td1(ck)-1;
   end
   
-  if RN==18 % Reaction 2: mh7 -> ph7	
+  if RN==36 % Reaction 2: mh7 -> ph7	
      ph7=ph7+1;
      s2(ck,:)=s2(ck,2:Td2(ck));
      Td2(ck)=Td2(ck)-1;
   end
   
-  if RN==19 %// Reaction 3: mh6 -> ph6
+  if RN==37 %// Reaction 3: mh6 -> ph6
      ph6=ph6+1;
      s3(ck,:)=s3(ck,2:Td3(ck));
      Td3(ck)=Td3(ck)-1;
   end
   
-  if RN==20 % // Reaction 4: md -> pd	
+  if RN==38 % // Reaction 4: md -> pd	
      pd=pd+1;
      s4(ck,:)=s4(ck,2:Td4(ck));
      Td4(ck)=Td4(ck)-1;
   end
   
-  if RN==21 % // Reaction 5: -> mh1 
+  if RN==39 % // Reaction 5: -> mh1 
       mh1=mh1+1;
       s5(ck,:)=s5(ck,2:Td5(ck));
       Td5(ck)=Td5(ck)-1;
   end
   
-  if RN==22 % Reaction 6: -> mh7
+  if RN==40 % Reaction 6: -> mh7
       mh7=mh7+1;
       s6(ck,:)=s6(ck,2:Td6(ck));
       Td6(ck)=Td6(ck)-1;
   end
   
-  if RN==23  % Reaction 7: -> mh6
+  if RN==41  % Reaction 7: -> mh6
      mh6=mh6+1;
      s7(ck,:)=s7(ck,2:Td7(ck));
      Td7(ck)=Td7(ck)-1; 
   end
   
-  if RN==24 % // Reaction 8: -> md
+  if RN==42 % // Reaction 8: -> md
      md=md+1; 
      s8(ck,:)=s8(ck,2:Td8(ck)); 
      Td8(ck)=Td8(ck)-1;
@@ -249,7 +244,7 @@ end
   
   % For the selected reaction and cell, update Pk. 
   % (if not completing a delayed reaction)
-  if RN<=16 && RN>=1
+  if RN<=34 && RN>=1
      r = rand;
      Pk(ck,RN) = Pk(ck,RN) + log(1/r);
   end
@@ -298,17 +293,17 @@ end
       ph1(ck)=ph1(ck)-1;
   elseif RN==10 % Reaction 10: ph7 ->  
       ph7(ck)=ph7(ck)-1;
-  elseif RN==11 % Reaction 11: ph6 ->
+  elseif RN==11 % Reaction 16: ph6 ->
       ph6(ck)=ph6(ck)-1;
-  elseif RN==12 %  Reaction 12: pd ->     
+  elseif RN==12 %  Reaction 26: pd ->     
       pd(ck)=pd(ck)-1;
-  elseif RN==13 % // Reaction 13: mh1 ->  
+  elseif RN==13 % // Reaction 28: mh1 ->  
       mh1(ck)=mh1(ck)-1;
-  elseif RN==14 % // Reaction 14: mh7 -> 
+  elseif RN==14 % // Reaction 30: mh7 -> 
       mh7(ck)=mh7(ck)-1;
-  elseif RN==15 % // Reaction 15: mh6 ->
+  elseif RN==15 % // Reaction 32: mh6 ->
       mh6(ck)=mh6(ck)-1;
-  elseif RN==16 %// Reaction 16: md ->  
+  elseif RN==16 %// Reaction 34: md ->  
       md(ck)=md(ck)-1;
   end
   

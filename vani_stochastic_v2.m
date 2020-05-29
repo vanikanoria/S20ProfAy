@@ -5,19 +5,6 @@ RHO1=zeros([nrun,1]); PVAL1=zeros([nrun,1]);
 RHO2=zeros([nrun,1]); PVAL2=zeros([nrun,1]);
 RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
 
-for run=1:nrun 
-maxi=10000000; % Maximum number of iterations to run.
-tend=20; %240; % Maximum time for simulation.
-format compact 
-% rand('state',sum(100*clock)) 
-rand('state',run) % Sets random number generator to a specific state.
-
-Time=[0]; % Simulation time  
-mh1v_c1=[0]; % Her1 mRNA levels -> cell 1
-mh7v_c1=[0]; % Her7 mRNA levels -> cell 1
-mh1v_c2=[0]; % Her1 mRNA levels -> cell 2
-mh7v_c2=[0]; % Her7 mRNA levels -> cell 2
-
 % % Parameter values used in the 2013 study (from Table S1)
 psh1=49.9139;
 psh6=34.3117;
@@ -41,10 +28,10 @@ pdh17=0.320157;
 pdh66=0.268042;
 pdh67=0.352037;
 pdh77=0.251601;
-nmh1=10.0213;
-nmh6=10;
-nmh7=10.4515;
-nmd=7.74472;
+nmh1=1;%10.0213;
+nmh6=1;%10;
+nmh7=1;%0.4515;
+nmd=1;%7.74472;
 nph1=1.5398;
 nph6=0.886233;
 nph7=0.539972;
@@ -65,6 +52,18 @@ critph11=587.298;
 critph76=769.628;
 critpd=490.254;
 
+for run=1:nrun 
+maxi=10000000; % Maximum number of iterations to run.
+tend=7; %240; % Maximum time for simulation.
+format compact 
+% rand('state',sum(100*clock)) 
+rand('state',run) % Sets random number generator to a specific state.
+
+Time=[0]; % Simulation time  
+mh1v_c1=[0]; % Her1 mRNA levels -> cell 1
+mh7v_c1=[0]; % Her7 mRNA levels -> cell 1
+mh1v_c2=[0]; % Her1 mRNA levels -> cell 2
+mh7v_c2=[0]; % Her7 mRNA levels -> cell 2
 
 % Data storage for delayed reaction times
 % row 1 -> cell 1
@@ -195,10 +194,10 @@ end
   
   % potential no. of reactions = 34+8+34+8
   
-  if RN>=1 && RN<=42 %this is if the reaction is in cell 1
+  if RN<=42 %this is if the reaction is in cell 1
       ck=1;
       cn=2; % other cell is cell 2
-  elseif RN>=1 %the reaction is in cell 2 
+  else %the reaction is in cell 2 
       ck=2; 
       cn=1; %other cell is cell 1
       RN=RN-42;
@@ -468,7 +467,7 @@ hold on
 plot(Time, mh1v_c1,'b')
 hold on
 plot(Time, mh7v_c1,'r')
-legend('Her1 of cell 1','Her7 of cell 1','Her1 of cell 2','Her7 of cell 2')
+legend('Her1 of cell 1','Her1 of cell 2') % should be synchronized
 xlabel('Time')
 ylabel('#mRNA')
 saveas(gcf,strcat(['Run_v2', num2str(run)]),'jpg');
