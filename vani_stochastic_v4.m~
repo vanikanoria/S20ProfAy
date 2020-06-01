@@ -120,21 +120,6 @@ fh7(1)= msh7*(1+(pd(2)/critpd))/(1+(pd(2)/critpd)+(ph1(1)*ph1(1)/critph11)^2 +(p
 fh7(2)= msh7*(1+(pd(1)/critpd))/(1+(pd(1)/critpd)+(ph1(2)*ph1(2)/critph11)^2 +(ph7(2)*ph6(2)/critph76)^2);
 fd=@(ph1,ph7,ph6) msd/(1+(ph1*ph1/critph11)^2+(ph7*ph6/critph76)^2);
 
-for ck=1:2
-    a(ck,1) = psh1*mh1(ck); % Reaction 01: mh1 -> ph1
-    a(ck,2) = psh7*mh7(ck);% // Reaction 02: mh7 -> ph7
-    a(ck,3)=fh7(ck); % // Reaction 3: -> mh7
-    a(ck,4) = psd*md(ck); % // Reaction 4: md -> pd
-    a(ck,5)=fh1(ck); % // Reaction 5: -> mh1
-    a(ck,6)=fd(ph1(ck),ph7(ck),ph6(ck));% // Reaction 6: -> md
-    a(ck,7) = mdh1*mh1(ck); % // Reaction 7: mh1 ->
-    a(ck,8) = mdh7*mh7(ck); % // Reaction 8: mh7 ->
-    a(ck,9) = pdh1*ph1(ck); % Reaction 09: ph1 ->
-    a(ck,10) = pdh7*ph7(ck);% // Reaction 10: ph7 ->
-    a(ck,11) = mdd*md(ck); %// Reaction 11: md ->
-    a(ck,12) = pdd*pd(ck); % // Reaction 12: pd ->   
-    
-end
 
 for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
     
