@@ -1,4 +1,5 @@
 nrun=30;
+
 RHO1=zeros([nrun,1]); PVAL1=zeros([nrun,1]);
 RHO2=zeros([nrun,1]); PVAL2=zeros([nrun,1]);
 RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
@@ -205,7 +206,7 @@ for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
   for i=1:16
      Tk(i)=Tk(i)+a(i)*Delta;
   end
-    
+
     Time=[Time T]; % Store time, and mh1 and mh7 levels.
     mh1v=[mh1v mh1];
     mh7v=[mh7v mh7];

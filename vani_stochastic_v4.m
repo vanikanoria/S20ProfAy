@@ -18,9 +18,9 @@ pdh1=0.34951;
 % pdh6=0.14824;
 pdh7=0.249715;
 pdd=0.324316;
-msh1=33.413; % 48.3084;
+msh1=30; % 48.3084;
 % msh6=36.4073;
-msh7=39.685;
+msh7= 20; %39.685;
 msd=60.5577;
 mdh1=0.322965;
 % mdh6=0.146372;
@@ -58,7 +58,7 @@ critpd=490.254;
 
 for run=1:nrun 
 maxi=10000000; % Maximum number of iterations to run.
-tend=0.1; %240; % Maximum time for simulation.
+tend=20; %240; % Maximum time for simulation.
 format compact 
 % rand('state',sum(100*clock)) 
 rand('state',run) % Sets random number generator to a specific state.
@@ -145,26 +145,27 @@ for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
 % 1-6: delayed reactions
 % 7-12: non-delayed reactions
 
-   for ck=1:2
+   for ckvalue=1:2
        for j=1:12
-           if a(ck,j) ~= 0
-               t(ck,j) = (Pk(ck,j) - Tk(ck,j))/a(ck,j);
+           if a(ckvalue,j) ~= 0
+               t(ckvalue,j) = (Pk(ckvalue,j) - Tk(ckvalue,j))/a(ckvalue,j); 
+    
            else
-               t(ck,j) = inf;
+               t(ckvalue,j) = inf;
            end
        end
    end
 
   % Choose the next reaction and its time.
   [Delta RN] = min([t(1,:),s{1,1}(1),s{1,2}(1),s{1,3}(1), s{1,4}(1), s{1,5}(1), s{1,6}(1), t(2,:),s{2,1}(1),s{2,2}(1),s{2,3}(1),s{2,4}(1),s{2,5}(1),s{2,6}(1)]); 
-  RN
+  
   % = [non-delayed reactions of cell 1, delayed reactions of cell 1,
   % non-delayed reactions of cell 2, delayed reactions of cell 2)
   
   % Delta will get the time before the next reaction
   % and RN will the number of the next reaction (which reaction).
   
-  % potential no. of reactions = 34+8+34+8
+  % potential no. of reactions = 12+6+12+6
   
   if RN<=18 %this is if the reaction is in cell 1
       ck=1;
@@ -176,9 +177,9 @@ for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
   end
 
 if RN>=1 && RN<=18
-    for ck=1:2
+    for ckvalue=1:2
         for rn=1:6
-            s{ck,rn}=s{ck,rn}-Delta;
+            s{ckvalue,rn}=s{ckvalue,rn}-Delta;
         end
     end
     T=T+Delta;
@@ -241,23 +242,22 @@ end
     
   % For the selected reaction and cell, update Pk. 
   % (if not completing a delayed reaction)
+    
   if RN<=12 && RN>=1
      r = rand;
      Pk(ck,RN) = Pk(ck,RN) + log(1/r);
   end
-  
+
   if RN==1 % Reaction 1: mh1 -> ph1
      s{ck,RN} = s{ck,RN} (1:Td1(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, nph1, inf];
      Td1(ck)=Td1(ck)+1;
-     disp('R1')
   end
       
   if RN==2 % Reaction 2: mh7 -> ph7
      s{ck,RN} = s{ck,RN} (1:Td2(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, nph7, inf];
      Td2(ck)=Td2(ck)+1;
-     disp('R2')
   end 
       
   if RN==3 %// Reaction 3: -> mh7
@@ -270,7 +270,6 @@ end
      s{ck,RN} = s{ck,RN} (1:Td4(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, npd, inf]; 
      Td4(ck) = Td4(ck) + 1;
-     disp('R4')
   end
   
   if RN==5 % // Reaction 5: -> mh1 
@@ -319,14 +318,14 @@ end
       a(ck,5)=fh1(ck); % // Reaction 5: -> mh1
       a(ck,12) = pdd*pd(ck); % // Reaction 12: pd ->
   end
-  
+
   % Update Tk values for each reaction and each cell.
-  for ck=1:2
+  for ckvalue=1:2
       for k=1:12
-          Tk(ck,k)=Tk(ck,k)+a(ck,k)*Delta;
+          Tk(ckvalue,k)=Tk(ckvalue,k)+a(ckvalue,k)*Delta;
       end
   end
-    
+  
     Time=[Time T]; % Store time, and mh1 and mh7 levels.
     mh1v_c1=[mh1v_c1 mh1(1)];
     mh1v_c2=[mh1v_c2 mh1(2)];
@@ -335,17 +334,17 @@ end
 end % for i=1:maxi-1,
 
 Data = [Time' mh1v_c1' mh7v_c1' mh1v_c2' mh7v_c2'];
-DataTable=table(Time', mh1v_c1, mh7v_c1', mh1v_c2', mh7v_c2','VariableNames', {'Time', 'mh1_cell1', 'mh7_cell1', 'mh1_cell2', 'mh7_cell2'});
-writetable(DataTable, strcat('Run_v2', num2str(run),'.xlsx'),'WriteVariableNames', true);
+% DataTable=table(Time', mh1v_c1, mh7v_c1', mh1v_c2', mh7v_c2','VariableNames', {'Time', 'mh1_cell1', 'mh7_cell1', 'mh1_cell2', 'mh7_cell2'});
+% writetable(DataTable, strcat('Run_v2', num2str(run),'.xlsx'),'WriteVariableNames', true);
 
 figure
 plot(Time, mh1v_c1,'b')
 hold on
 plot(Time, mh7v_c1,'r')
 hold on
-plot(Time, mh1v_c1,'b')
+plot(Time, mh1v_c2,'b')
 hold on
-plot(Time, mh7v_c1,'r')
+plot(Time, mh7v_c2,'r')
 legend('Her1 of cell 1','Her7 of cell 1','Her1 of cell 2','Her7 of cell 2')
 xlabel('Time')
 ylabel('#mRNA')
@@ -353,7 +352,7 @@ saveas(gcf,strcat(['Run_v2', num2str(run)]),'jpg');
 close(gcf);
 
 figure
-histogram(mh1v)
+histogram(mh1v_c1)
 saveas(gcf,strcat('Run_v2_Histogram', num2str(run)),'jpg');
 close(gcf)
 

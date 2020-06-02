@@ -14,9 +14,9 @@ pdh1=0.34951;
 pdh6=0.14824;
 pdh7=0.249715;
 pdd=0.324316;
-msh1=35.83; % 48.3084;
+msh1=30; % 48.3084;
 msh6=36.4073;
-msh7=39.685;
+msh7=20; % 39.685;
 msd=60.5577;
 mdh1=0.322965;
 mdh6=0.146372;
@@ -100,17 +100,17 @@ Tk = zeros([2,16]);
 Pk = zeros([2,16]);
 t = zeros([2,16]);
 
-for ck=1:2 % for 2 cells
+for ckvalue=1:2 % for 2 cells
     for i=1:16
         r=rand;
-        Pk(ck, i) = log(1/r);
+        Pk(ckvalue, i) = log(1/r);
     end
 end
 
 % Functions for calculation of transcription rates of her1,her7 and deltaC mRNAs
 
 % I need: if ck=1, cn=2; if ck=2,cn=1
-
+fh1=[0;0];fh7=[0;0];
 % Ideally need : fh1= @(pd(cn), ph11(ck), ph76(ck)) ...
 fh1(1) = msh1*(1+(pd(2)/critpd))/(1+(pd(2)/critpd)+(ph1(1)*ph1(1)/critph11)^2 +(ph7(1)*ph6(1)/critph76)^2);
 fh1(2) = msh1*(1+(pd(1)/critpd))/(1+(pd(1)/critpd)+(ph1(2)*ph1(2)/critph11)^2 +(ph7(2)*ph6(2)/critph76)^2);
@@ -148,26 +148,26 @@ for ck=1:2
     
 end
 
-   for ck=1:2
+   for ckvalue=1:2
        for j=1:16
-           if a(ck,j) ~= 0
-               t(ck,j) = (Pk(ck,j) - Tk(ck,j))/a(ck,j);
+           if a(ckvalue,j) ~= 0
+               t(ckvalue,j) = (Pk(ckvalue,j) - Tk(ckvalue,j))/a(ckvalue,j);
            else
-               t(ck,j) = inf;
+               t(ckvalue,j) = inf;
            end
        end
    end
 
   % Choose the next reaction and its time.
   [Delta RN] = min([t(1,:),s{1,1}(1),s{1,2}(1),s{1,3}(1), s{1,4}(1), s{1,5}(1), s{1,6}(1), s{1,7}(1), s{1,8}(1), t(2,:),s{2,1}(1),s{2,2}(1),s{2,3}(1),s{2,4}(1),s{2,5}(1),s{2,6}(1),s{2,7}(1),s{2,8}(1)]); 
-  RN
+  
   % = [non-delayed reactions of cell 1, delayed reactions of cell 1,
   % non-delayed reactions of cell 2, delayed reactions of cell 2)
   
   % Delta will get the time before the next reaction
   % and RN will the number of the next reaction (which reaction).
   
-  % potential no. of reactions = 34+8+34+8
+  % potential no. of reactions = 16+8+16+8
   
   if RN<=24 %this is if the reaction is in cell 1
       ck=1;
@@ -179,9 +179,9 @@ end
   end
 
 if RN>=1 && RN<=24
-    for ck=1:2
+    for ckvalue=1:2
         for rn=1:8
-            s{ck,rn}=s{ck,rn}-Delta;
+            s{ckvalue,rn}=s{ckvalue,rn}-Delta;
         end
     end
     T=T+Delta;
@@ -249,28 +249,24 @@ end
      s{ck,RN} = s{ck,RN} (1:Td1(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, nph1, inf];
      Td1(ck)=Td1(ck)+1;
-     disp('R1')
   end
       
   if RN==2 % Reaction 2: mh7 -> ph7
      s{ck,RN} = s{ck,RN} (1:Td2(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, nph7, inf];
      Td2(ck)=Td2(ck)+1;
-     disp('R2')
   end 
       
   if RN==3 %// Reaction 3: mh6 -> ph6
      s{ck,RN} = s{ck,RN} (1:Td3(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, nph6, inf];
      Td3(ck) = Td3(ck) + 1;
-     disp('R3')
   end
   
   if RN==4 % // Reaction 4: md -> pd
      s{ck,RN} = s{ck,RN} (1:Td4(ck) - 1); 
      s{ck,RN} = [s{ck,RN}, npd, inf]; 
      Td4(ck) = Td4(ck) + 1;
-     disp('R4')
   end
   
   if RN==5 % // Reaction 5: -> mh1 
@@ -316,7 +312,7 @@ end
   end
   
   % Update Tk values for each reaction and each cell.
-  for ck=1:2
+  for ckvalue=1:2
       for k=1:16
           Tk(ck,k)=Tk(ck,k)+a(ck,k)*Delta;
       end

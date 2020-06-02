@@ -4,7 +4,7 @@ path('~/Documents/MATLAB/SupportPackages/R2018a/parallel/pbs/nonshared', oldpath
 email='vkanoria@colgate.edu'; 
 clusterHost='turing.colgate.edu'; 
 jobStorageLocation='/Users/vani/Desktop/VertSeg/S20ProfAy'; 
-remoteJobStorageLocation='/home/vkanoria/Somewhere on the Turing Cluster';
+remoteJobStorageLocation='/home/vkanoria/Documents';
 
 cluster=parallel.cluster.Generic( 'JobStorageLocation', jobStorageLocation);
 
@@ -20,5 +20,5 @@ cluster.AdditionalProperties.QueueName = 'matlab';
 cluster.AdditionalProperties.EmailAddress = email; 
 cluster.AdditionalProperties.UseUniqueSubfolders = true;
 
-saveAsProfile(cluster, 'Turing'); 
-parallel.defaultClusterProfile('Turing');
+saveAsProfile(cluster, 'Turing2'); 
+parallel.defaultClusterProfile('Turing2');

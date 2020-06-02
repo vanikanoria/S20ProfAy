@@ -98,10 +98,10 @@ Tk = zeros([2,34]);
 Pk = zeros([2,34]);
 t = zeros([2,34]);
 
-for ck=1:2 % for 2 cells
+for ckvalue=1:2 % for 2 cells
     for i=1:34
         r=rand;
-        Pk(ck, i) = log(1/r);
+        Pk(ckvalue, i) = log(1/r);
     end
 end
 
@@ -164,12 +164,12 @@ for ck=1:2
     
 end
 
-   for ck=1:2
+   for ckvalue=1:2
        for j=1:34
-           if a(ck,j) ~= 0
-               t(ck,j) = (Pk(ck,j) - Tk(ck,j))/a(ck,j);
+           if a(ckvalue,j) ~= 0
+               t(ckvalue,j) = (Pk(ckvalue,j) - Tk(ckvalue,j))/a(ckvalue,j);
            else
-               t(ck,j) = inf;
+               t(ckvalue,j) = inf;
            end
        end
    end
@@ -196,9 +196,9 @@ end
 
       
   if RN>=1 && RN<=42 % 26 non-delayed reactions + 2*8 for delayed reactions
-      for ck=1:2
+      for ckvalue=1:2
           for rn=1:8
-              s{ck,rn}=s{ck,rn}-Delta;
+              s{ckvalue,rn}=s{ckvalue,rn}-Delta;
           end
       end
       T=T+Delta;
@@ -383,9 +383,9 @@ end
   end
   
   % Update Tk values for each reaction and each cell.
-  for ck=1:2
+  for ckvalue=1:2
       for k=1:34
-          Tk(ck,k)=Tk(ck,k)+a(ck,k)*Delta;
+          Tk(ckvalue,k)=Tk(ckvalue,k)+a(ckvalue,k)*Delta;
       end
   end
     
