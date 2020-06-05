@@ -18,9 +18,9 @@ pdh1=0.34951;
 % pdh6=0.14824;
 pdh7=0.249715;
 pdd=0.324316;
-msh1=30; % 48.3084;
+msh1=48.3084;
 % msh6=36.4073;
-msh7= 20; %39.685;
+msh7= 39.685;
 msd=60.5577;
 mdh1=0.322965;
 % mdh6=0.146372;
@@ -242,7 +242,6 @@ end
     
   % For the selected reaction and cell, update Pk. 
   % (if not completing a delayed reaction)
-    
   if RN<=12 && RN>=1
      r = rand;
      Pk(ck,RN) = Pk(ck,RN) + log(1/r);
