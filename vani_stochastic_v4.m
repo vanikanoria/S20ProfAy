@@ -10,21 +10,21 @@ RHO2=zeros([nrun,1]); PVAL2=zeros([nrun,1]);
 RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
 
 % % Parameter values used in the 2013 study (from Table S1)
-psh1=49.9139;
+psh1=3.5; %49.9139;
 % psh6=34.3117;
-psh7=28.5626;
-psd=37.7828;
-pdh1=0.34951;
+psh7=3.5; %28.5626;
+psd=6; %37.7828;
+pdh1=1.8; %0.34951;
 % pdh6=0.14824;
-pdh7=0.249715;
-pdd=0.324316;
-msh1=48.3084;
+pdh7=1.75; %0.249715;
+pdd= 1.7; % 0.324316;
+msh1= 18;%48.3084;
 % msh6=36.4073;
-msh7= 39.685;
+msh7= 19.5; %39.685;
 msd=60.5577;
-mdh1=0.322965;
+mdh1=0.75; %0.322965;
 % mdh6=0.146372;
-mdh7=0.381738;
+mdh7=0.735; % 0.381738;
 mdd=0.352056;
 % pdh11=0.390961;
 % pdh16=0.29774;
@@ -58,7 +58,7 @@ critpd=490.254;
 
 for run=1:nrun 
 maxi=10000000; % Maximum number of iterations to run.
-tend=20; %240; % Maximum time for simulation.
+tend=120; %240; % Maximum time for simulation.
 format compact 
 % rand('state',sum(100*clock)) 
 rand('state',run) % Sets random number generator to a specific state.
@@ -113,6 +113,8 @@ end
 
 % I need: if ck=1, cn=2; if ck=2,cn=1
 
+fh1=[0;0];
+fh7=[0;0];
 % Ideally need : fh1= @(pd(cn), ph11(ck), ph76(ck)) ...
 fh1(1) = msh1*(1+(pd(2)/critpd))/(1+(pd(2)/critpd)+(ph1(1)*ph1(1)/critph11)^2 +(ph7(1)*ph6(1)/critph76)^2);
 fh1(2) = msh1*(1+(pd(1)/critpd))/(1+(pd(1)/critpd)+(ph1(2)*ph1(2)/critph11)^2 +(ph7(2)*ph6(2)/critph76)^2);
@@ -341,9 +343,9 @@ plot(Time, mh1v_c1,'b')
 hold on
 plot(Time, mh7v_c1,'r')
 hold on
-plot(Time, mh1v_c2,'b')
+plot(Time, mh1v_c2,'k')
 hold on
-plot(Time, mh7v_c2,'r')
+plot(Time, mh7v_c2,'m')
 legend('Her1 of cell 1','Her7 of cell 1','Her1 of cell 2','Her7 of cell 2')
 xlabel('Time')
 ylabel('#mRNA')
@@ -358,6 +360,19 @@ close(gcf)
 % only covered cell 1 here
 [RHO1(run),PVAL1(run)] = corr(mh1v_c1',mh7v_c1','Type','Pearson');
 [RHO2(run),PVAL2(run)] = corr(mh1v_c1',mh7v_c1','Type','Spearman');
+
+% Smooth version of the curve using Moving Average with k=5, which means 4
+% neighbors
+
+Smooth_mh1v_c1=movmean(mh1v_c1,200);
+Smooth_mh1v_c1_Data = [Time' Smooth_mh1v_c1'];
+
+figure
+plot(Time, mh1v_c1,'b')
+hold on
+plot(Time, Smooth_mh1v_c1,'k')
+saveas(gcf,strcat('Run_v2_Smooth', num2str(run)),'jpg');
+close(gcf)
 
 end
 Stats=table(RHO1, PVAL1, RHO2, PVAL2,'VariableNames', {'Pearson', 'PearSig','Spearman','SpearSig'});
