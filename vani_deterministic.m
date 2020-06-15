@@ -10,7 +10,7 @@
 
 
 function[f,g] = vani_deterministic(x)
-
+%size of x according to isres = (PopSize,number of parameters)
 global Cutoff;
 global VertGoodSet;
 global Lb;
@@ -28,6 +28,7 @@ global time_steps;
 
 testPop=PopSize;
 f=zeros(PopSize,1);
+timesteps = time_steps;
 % testPop=1; % FOR TESTING WE UNCOMMENT
 %num_of_parameters = 44;
 
@@ -36,15 +37,21 @@ f=zeros(PopSize,1);
 
 %creating a 2-dimensional array to store parameter sets of each population
 %param_sets = zeros(testPop,num_of_parameters);
+disp('New Generation:')
 
 %original parameter set from x
-param_set_wt = x;
-x
-
-%parfor k=1:testPop % FOR TESTING WE COMMENT OUT
-for k=1:testPop % FOR TESTING WE UNCOMMENT
-    
-    fprintf("Simulating parameter set %i: ",k); % Used for creating output file names specific to the paramater
+param_set_wt = repmat(x,[1,1,6]);
+param_set_wt=permute(param_set_wt,[1 3 2]); %change?
+param_set_wt(:,2,4)=0; %delta mutant
+param_set_wt(:,3,1)=0; %her1 mutant
+param_set_wt(:,4,3)=0; %her7 mutant
+param_set_wt(:,5,2)=0; %her6 mutant
+param_set_wt(:,6,3)=0;param_set_wt(:,6,2)=0;%her6 and her7 mutant
+wperiod=0;wamplitude=0;
+parfor k=1:testPop % FOR TESTING WE COMMENT OUT
+% for k=1:testPop % FOR TESTING WE UNCOMMENT
+    wperiod=0;wamplitude=0;
+    fprintf("Simulating parameter set %i: \n",k); % Used for creating output file names specific to the paramater
     
     % Booleans to see if we met mutant conditions on each iteration
     %             wt = false; her1_mutant = false; her7_mutant = false; her6_mutant = false;
@@ -59,8 +66,8 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
     
     
     %----- Wild Type Conditions --------
-    mh1_wt=deterministic_model(param_set_wt);
-    if length(mh1_wt)~=time_steps
+    mh1_wt=deterministic_model(param_set_wt(k,1,:));
+    if length(mh1_wt)~=timesteps
     %deterministic_model return mh1=0 when the model is
     %inconsistent with biological possibilities
         f(k)=0;
@@ -78,10 +85,10 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
     
     % ---- Delta mutant ----
     
-    wt_psd = param_set_wt(4);
-    param_set_wt(4) = 0; %mutant condition : setting psd=0
-    mh1_delta = deterministic_model(param_set_wt);
-    if length(mh1_delta)==time_steps
+%     wt_psd = param_set_wt(k,4);
+%     param_set_wt(k,4) = 0; %mutant condition : setting psd=0
+    mh1_delta = deterministic_model(param_set_wt(k,2,:));
+    if length(mh1_delta)==timesteps
         % this means the model works for the mutant conditions
         [dperiod, damplitude]= findPeriodandAmplitude(mh1_delta);
         
@@ -92,14 +99,14 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+delta_mutant_period + delta_mutant_amplitude;
     end
-    param_set_wt(4) = wt_psd; %returning parameter set to WT conditions
+%     param_set_wt(k,4) = wt_psd; %returning parameter set to WT conditions
     
     % ---- Her1 mutant ----
     
-    wt_psh1 = param_set_wt(1);
-    param_set_wt(1) = 0; %mutant condition : setting psh1=0
-    mh1_h1 = deterministic_model(param_set_wt);
-    if length(mh1_h1)==time_steps
+%     wt_psh1 = param_set_wt(k,1);
+%     param_set_wt(k,1) = 0; %mutant condition : setting psh1=0
+    mh1_h1 = deterministic_model(param_set_wt(k,3,:));
+    if length(mh1_h1)==timesteps
         % this means the model works for the mutant conditions
         [h1period, h1amplitude]= findPeriodandAmplitude(mh1_h1);
         
@@ -110,14 +117,14 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her1_mutant_period + her1_mutant_amplitude;
     end
-    param_set_wt(1) = wt_psh1; %returning parameter set to WT conditions
-    
+%     param_set_wt(k,1) = wt_psh1; %returning parameter set to WT conditions
+%     
     % ---- Her7 mutant ----
     
-    wt_psh7 = param_set_wt(3);
-    param_set_wt(3) = 0; %mutant condition : setting psh7=0
-    mh1_h7 = deterministic_model(param_set_wt);
-    if length(mh1_h7)==time_steps
+%     wt_psh7 = param_set_wt(k,3);
+%     param_set_wt(k,3) = 0; %mutant condition : setting psh7=0
+    mh1_h7 = deterministic_model(param_set_wt(k,4,:));
+    if length(mh1_h7)==timesteps
         [h7period, h7amplitude]= findPeriodandAmplitude(mh1_h7);
         
         her7_mutant_amplitude = (h7amplitude/wamplitude > 0.1) && (h7amplitude/wamplitude < 0.4);
@@ -125,15 +132,15 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her7_mutant_period + her7_mutant_amplitude;
     end
-    param_set_wt(3) = wt_psh7; %returning parameter set to WT conditions
+%     param_set_wt(k,3) = wt_psh7; %returning parameter set to WT conditions
     
     % ---- Her6 mutant ----
     
-    wt_psh6 = param_set_wt(2);
-    param_set_wt(2) = 0; %mutant condition : setting psh7=0
-    mh1_h6 = deterministic_model(param_set_wt);
+%     wt_psh6 = param_set_wt(k,2);
+%     param_set_wt(k,2) = 0; %mutant condition : setting psh7=0
+    mh1_h6 = deterministic_model(param_set_wt(k,5,:));
     
-    if length(mh1_h6)==time_steps
+    if length(mh1_h6)==timesteps
         [h6period, h6amplitude]= findPeriodandAmplitude(mh1_h6);
         
         her6_mutant_amplitude = (h6amplitude/wamplitude > 0.85) && (h6amplitude/wamplitude < 1.15);
@@ -141,17 +148,17 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her6_mutant_period + her6_mutant_amplitude;
     end
-    param_set_wt(2) = wt_psh6; %returning parameter set to WT conditions
+%     param_set_wt(k,2) = wt_psh6; %returning parameter set to WT conditions
     
     % ---- Her6 and Her7 mutant ----
     
-    wt_psh7 = param_set_wt(3);
-    wt_psh6 = param_set_wt(2);
-    param_set_wt(3) = 0;
-    param_set_wt(2) = 0;
-    mh1_h76 = deterministic_model(param_set_wt);
+%     wt_psh7 = param_set_wt(k,3);
+%     wt_psh6 = param_set_wt(k,2);
+%     param_set_wt(k,3) = 0;
+%     param_set_wt(k,2) = 0;
+    mh1_h76 = deterministic_model(param_set_wt(k,6,:));
     
-    if length(mh1_h76)==time_steps
+    if length(mh1_h76)==timesteps
     [h76period, h76amplitude]= findPeriodandAmplitude(mh1_h76);
     
     her76_mutant_amplitude = (h76amplitude/wamplitude > 0.85) && (h76amplitude/wamplitude < 1.15);
@@ -159,10 +166,11 @@ for k=1:testPop % FOR TESTING WE UNCOMMENT
     %add a point for each mutant condition that is satisfied: period and amplitude
     f(k)=f(k)+her76_mutant_period + her76_mutant_amplitude;
     end
-    %returning parameter set to WT conditions
-    param_set_wt(3) = wt_psh7;
-    param_set_wt(2) = wt_psh6;
-    
+    %returning parameter set to WT conditions - don't need to do for the
+    %last iteration
+%     param_set_wt(k,3) = wt_psh7;
+%     param_set_wt(k,2) = wt_psh6;
+%     
 
     
     %  If the paramater set created oscillatory behavior in wild type and all the mutant conditions were satisfied:
@@ -176,15 +184,15 @@ end
 
 for j= 1:testPop
     if f(j)>=Cutoff %%adding the paramter sets that exceed the cutoff fitness score
-        fprintf('The parameter set exceeded the cutoff: f(%i) = %f',j,f(j));
+        fprintf('The parameter set exceeded the cutoff: f(%i) = %f\n',j,f(j));
         VertGoodSet = [VertGoodSet; x(j,:)]; %#ok<*AGROW>
     end
-    %         if f(j)>= 28.9
-    %              dlmwrite('SADSets072017Run203.csv',x(j,:),'delimiter',',','-append');
-    %         end
+            if f(j)>= Cutoff
+                 dlmwrite('VertSegSets0615.csv',x(j,:),'delimiter',',','-append');
+            end
 end
 
-
+fprintf('  ');
 %Constraints. g means something is <= 0
 g(:,1)=-x(:,1)+Lb(1);
 g(:,2)=x(:,1)-Ub(1);

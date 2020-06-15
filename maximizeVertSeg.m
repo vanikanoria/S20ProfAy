@@ -10,7 +10,7 @@ global PopSize;
 global time_steps;
 
 VertGoodSet=ones(1,44);
-Cutoff = 6;
+Cutoff = 10;
 
 minutes=600; %1200;
 eps = 0.01; %time step to be used for Euler's method, default is 0.01
