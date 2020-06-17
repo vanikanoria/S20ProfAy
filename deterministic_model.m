@@ -90,7 +90,6 @@ critpd=param_set(44);
     
     %initializing the states: each state = array with cell no. and time at
     %which the state is calculated
-    disp('hi2')
     
     ph1=zeros(cells,time_steps); 
     ph7=zeros(cells,time_steps);

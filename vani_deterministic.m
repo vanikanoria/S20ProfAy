@@ -37,7 +37,6 @@ timesteps = time_steps;
 
 %creating a 2-dimensional array to store parameter sets of each population
 %param_sets = zeros(testPop,num_of_parameters);
-disp('New Generation:')
 
 %original parameter set from x
 param_set_wt = repmat(x,[1,1,6]);
@@ -48,10 +47,10 @@ param_set_wt(:,4,3)=0; %her7 mutant
 param_set_wt(:,5,2)=0; %her6 mutant
 param_set_wt(:,6,3)=0;param_set_wt(:,6,2)=0;%her6 and her7 mutant
 wperiod=0;wamplitude=0;
-parfor k=1:testPop % FOR TESTING WE COMMENT OUT
-% for k=1:testPop % FOR TESTING WE UNCOMMENT
+%parfor k=1:testPop % FOR TESTING WE COMMENT OUT
+ for k=1:testPop % FOR TESTING WE UNCOMMENT
     wperiod=0;wamplitude=0;
-    fprintf("Simulating parameter set %i: \n",k); % Used for creating output file names specific to the paramater
+    %fprintf("Simulating parameter set %i: \n",k); % Used for creating output file names specific to the paramater
     
     % Booleans to see if we met mutant conditions on each iteration
     %             wt = false; her1_mutant = false; her7_mutant = false; her6_mutant = false;
@@ -74,11 +73,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
         continue;
     end
     if satisfiesWTconditions(mh1_wt)
+        fprintf('satisfiesWTconditions\n');
         f(k)=f(k)+5;
     end
     if f(k)==5 %% otherwise exit this parameter set?
         [wperiod, wamplitude]= findPeriodandAmplitude(mh1_wt);
         f(k)=f(k)+(wperiod > 29 && wperiod < 31 ); %add a point for satisfying period conditions
+    else
+        fprintf('~(wperiod > 29 && wperiod < 31 )')
     end
     
     % --------- Mutant conditions -----------
@@ -98,6 +100,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
         delta_mutant_period = ((dperiod / wperiod) > 1.07) && ((dperiod / wperiod) < 1.20);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+delta_mutant_period + delta_mutant_amplitude;
+        if ~delta_mutant_period
+            fprintf('\n~delta_mutant_period:');
+            fprintf(delta_mutant_period);
+        end
+        if ~delta_mutant_amplitude
+            fprintf('\n~delta_mutant_amplitude:');
+            fprintf(delta_mutant_amplitude);
+        end
     end
 %     param_set_wt(k,4) = wt_psd; %returning parameter set to WT conditions
     
@@ -116,6 +126,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
         her1_mutant_period = ((h1period/wperiod) > 0.97) && ((h1period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her1_mutant_period + her1_mutant_amplitude;
+        if ~her1_mutant_amplitude
+            fprintf('\n~her1_mutant_amplitude:');
+            fprintf(her1_mutant_amplitude);
+        end
+        if ~her1_mutant_period
+            fprintf('\n~her1_mutant_period:')
+            fprintf(her1_mutant_period);
+        end
     end
 %     param_set_wt(k,1) = wt_psh1; %returning parameter set to WT conditions
 %     
@@ -131,6 +149,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
         her7_mutant_period = (h7period/wperiod > 0.97) && ((h7period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her7_mutant_period + her7_mutant_amplitude;
+        if ~her7_mutant_amplitude
+            fprintf('\n~her7_mutant_amplitude:');
+            fprintf(her7_mutant_amplitude);
+        end
+        if ~her7_mutant_period
+            fprintf('\n~her7_mutant_period:')
+            fprintf(her7_mutant_period);
+        end
     end
 %     param_set_wt(k,3) = wt_psh7; %returning parameter set to WT conditions
     
@@ -147,6 +173,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
         her6_mutant_period = ((h6period / wperiod) > 1.05) && ((h6period / wperiod) < 1.07);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her6_mutant_period + her6_mutant_amplitude;
+        if ~her6_mutant_amplitude
+            fprintf('\n~her6_mutant_amplitude:');
+            fprintf(her6_mutant_amplitude);
+        end
+        if ~her6_mutant_period
+            fprintf('\n~her6_mutant_period:')
+            fprintf(her6_mutant_period);
+        end
     end
 %     param_set_wt(k,2) = wt_psh6; %returning parameter set to WT conditions
     
@@ -165,6 +199,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
     her76_mutant_period = ((h76period / wperiod) > 1.05) && ((h76period / wperiod) < 1.07);
     %add a point for each mutant condition that is satisfied: period and amplitude
     f(k)=f(k)+her76_mutant_period + her76_mutant_amplitude;
+    if ~her76_mutant_amplitude
+        fprintf('\n~her76_mutant_amplitude:');
+        fprintf(her76_mutant_amplitude);
+    end
+    if ~her76_mutant_period
+        fprintf('\n~her76_mutant_period:')
+        fprintf(her76_mutant_period);
+    end
     end
     %returning parameter set to WT conditions - don't need to do for the
     %last iteration
@@ -184,12 +226,12 @@ end
 
 for j= 1:testPop
     if f(j)>=Cutoff %%adding the paramter sets that exceed the cutoff fitness score
-        fprintf('The parameter set exceeded the cutoff: f(%i) = %f\n',j,f(j));
+        %fprintf('The parameter set exceeded the cutoff: f(%i) = %f\n',j,f(j));
         VertGoodSet = [VertGoodSet; x(j,:)]; %#ok<*AGROW>
     end
-            if f(j)>= Cutoff
-                 dlmwrite('VertSegSets0615.csv',x(j,:),'delimiter',',','-append');
-            end
+%             if f(j)>= Cutoff %don't need this
+%                  dlmwrite('VertSegSets0615.csv',x(j,:),'delimiter',',','-append');
+%             end
 end
 
 fprintf('  ');

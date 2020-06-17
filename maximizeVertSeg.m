@@ -17,7 +17,7 @@ eps = 0.01; %time step to be used for Euler's method, default is 0.01
 time_steps = (minutes / eps);
 
 PopSize=10;%modify population size (100-400) - 100
-generations = 10;%modify number of generations - 1000
+generations = 5;%modify number of generations - 1000
 parents = 2;%modify number of parents. Should be about 1/7 of lightPopSize. 15
 
 

@@ -45,11 +45,7 @@ param_set_wt = x;
     
     %----- Wild Type Conditions --------
     mh1_wt=deterministic_model(param_set_wt);
-    disp('length(mh1_wt)=');
-        disp(length(mh1_wt));
     if length(mh1_wt)~=time_steps 
-        disp('length(mh1_wt)=');
-        disp(length(mh1_wt));
     %deterministic_model return mh1=0 when the model is
     %inconsistent with biological possibilities
         f=0;
@@ -61,6 +57,8 @@ param_set_wt = x;
     if f==5 %% otherwise exit this parameter set?
         [wperiod, wamplitude]= findPeriodandAmplitude(mh1_wt);
         f=f+(wperiod > 29 && wperiod < 31 ); %add a point for satisfying period conditions
+        else
+        disp('~(wperiod > 29 && wperiod < 31 )')
     end
     
     % --------- Mutant conditions -----------
@@ -80,6 +78,16 @@ param_set_wt = x;
         delta_mutant_period = ((dperiod / wperiod) > 1.07) && ((dperiod / wperiod) < 1.20);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f=f+delta_mutant_period + delta_mutant_amplitude;
+        if ~delta_mutant_period
+            disp('~delta_mutant_period:');
+            disp(delta_mutant_period);
+        end
+        if ~delta_mutant_amplitude
+            disp('~delta_mutant_amplitude:');
+            disp(delta_mutant_amplitude);
+        end
+        else
+        disp('length(mh1_delta)~=time_steps')
     end
     param_set_wt(4) = wt_psd; %returning parameter set to WT conditions
     
@@ -98,6 +106,16 @@ param_set_wt = x;
         her1_mutant_period = ((h1period/wperiod) > 0.97) && ((h1period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f=f+her1_mutant_period + her1_mutant_amplitude;
+        if ~her1_mutant_amplitude
+            disp('~her1_mutant_amplitude:');
+            disp(her1_mutant_amplitude);
+        end
+        if ~her1_mutant_period
+            disp('~her1_mutant_period:')
+            disp(her1_mutant_period);
+        end
+        else
+        disp('length(mh1_h1)~=time_steps')
     end
     param_set_wt(1) = wt_psh1; %returning parameter set to WT conditions
     
@@ -113,6 +131,16 @@ param_set_wt = x;
         her7_mutant_period = (h7period/wperiod > 0.97) && ((h7period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f=f+her7_mutant_period + her7_mutant_amplitude;
+        if ~her7_mutant_amplitude
+            disp('~her7_mutant_amplitude:');
+            disp(her7_mutant_amplitude);
+        end
+        if ~her7_mutant_period
+            disp('~her7_mutant_period:')
+            disp(her7_mutant_period);
+        end
+    else
+        disp('length(mh1_h7)~=time_steps')
     end
     param_set_wt(3) = wt_psh7; %returning parameter set to WT conditions
     
@@ -129,6 +157,16 @@ param_set_wt = x;
         her6_mutant_period = ((h6period / wperiod) > 1.05) && ((h6period / wperiod) < 1.07);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f=f+her6_mutant_period + her6_mutant_amplitude;
+        if ~her6_mutant_amplitude
+            disp('~her6_mutant_amplitude:');
+            disp(her6_mutant_amplitude);
+        end
+        if ~her6_mutant_period
+            disp('~her6_mutant_period:')
+            disp(her6_mutant_period);
+        end
+        else
+        disp('length(mh1_h6)~=time_steps')
     end
     param_set_wt(2) = wt_psh6; %returning parameter set to WT conditions
     
@@ -147,6 +185,16 @@ param_set_wt = x;
     her76_mutant_period = ((h76period / wperiod) > 1.05) && ((h76period / wperiod) < 1.07);
     %add a point for each mutant condition that is satisfied: period and amplitude
     f=f+her76_mutant_period + her76_mutant_amplitude;
+        if ~her76_mutant_amplitude
+            disp('~her76_mutant_amplitude:');
+            disp(her76_mutant_amplitude);
+        end
+        if ~her76_mutant_period
+            disp('~her76_mutant_period:')
+            disp(her76_mutant_period);
+        end
+    else
+        disp('length(mh1_h76)~=time_steps')
     end
     %returning parameter set to WT conditions
     param_set_wt(3) = wt_psh7;
