@@ -8,6 +8,7 @@ global Lb;
 global Ub;
 global PopSize;
 global time_steps;
+global eps;
 
 VertGoodSet=ones(1,44);
 Cutoff = 10;

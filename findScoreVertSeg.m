@@ -1,6 +1,8 @@
 function f = findScoreVertSeg(x)
 
 global time_steps;
+global eps;
+eps=0.01;
 % global Cutoff;
 % global VertGoodSet;
 % global Lb;
@@ -51,14 +53,12 @@ param_set_wt = x;
         f=0;
         return;
     end
-    if satisfiesWTconditions(mh1_wt)
+    if satisfiesWTconditions(mh1_wt(1,:))
         f=f+5;
     end
     if f==5 %% otherwise exit this parameter set?
-        [wperiod, wamplitude]= findPeriodandAmplitude(mh1_wt);
+        [wperiod, wamplitude]= findPeriodandAmplitude(mh1_wt(1,:));
         f=f+(wperiod > 29 && wperiod < 31 ); %add a point for satisfying period conditions
-        else
-        disp('~(wperiod > 29 && wperiod < 31 )')
     end
     
     % --------- Mutant conditions -----------
@@ -70,7 +70,7 @@ param_set_wt = x;
     mh1_delta = deterministic_model(param_set_wt);
     if length(mh1_delta)==time_steps
         % this means the model works for the mutant conditions
-        [dperiod, damplitude]= findPeriodandAmplitude(mh1_delta);
+        [dperiod, damplitude]= findPeriodandAmplitude(mh1_delta(1,:));
         
         %amplitude condition to be satisfied for the mutant
         delta_mutant_amplitude = (damplitude/wamplitude > 0.3) && (damplitude/wamplitude < 0.85);
@@ -78,16 +78,6 @@ param_set_wt = x;
         delta_mutant_period = ((dperiod / wperiod) > 1.07) && ((dperiod / wperiod) < 1.20);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f=f+delta_mutant_period + delta_mutant_amplitude;
-        if ~delta_mutant_period
-            disp('~delta_mutant_period:');
-            disp(delta_mutant_period);
-        end
-        if ~delta_mutant_amplitude
-            disp('~delta_mutant_amplitude:');
-            disp(delta_mutant_amplitude);
-        end
-        else
-        disp('length(mh1_delta)~=time_steps')
     end
     param_set_wt(4) = wt_psd; %returning parameter set to WT conditions
     
@@ -98,7 +88,7 @@ param_set_wt = x;
     mh1_h1 = deterministic_model(param_set_wt);
     if length(mh1_h1)==time_steps
         % this means the model works for the mutant conditions
-        [h1period, h1amplitude]= findPeriodandAmplitude(mh1_h1);
+        [h1period, h1amplitude]= findPeriodandAmplitude(mh1_h1(1,:));
         
         %amplitude condition to be satisfied for the mutant
         her1_mutant_amplitude = ((h1amplitude/wamplitude) > 0.85) && ((h1amplitude/wamplitude) < 1.15);
@@ -108,11 +98,13 @@ param_set_wt = x;
         f=f+her1_mutant_period + her1_mutant_amplitude;
         if ~her1_mutant_amplitude
             disp('~her1_mutant_amplitude:');
-            disp(her1_mutant_amplitude);
+            disp(h1amplitude);
+            disp('(h1amplitude/wamplitude):')
+            disp(h1amplitude/wamplitude);
         end
         if ~her1_mutant_period
             disp('~her1_mutant_period:')
-            disp(her1_mutant_period);
+            disp(h1_mutant_period);
         end
         else
         disp('length(mh1_h1)~=time_steps')
@@ -125,7 +117,7 @@ param_set_wt = x;
     param_set_wt(3) = 0; %mutant condition : setting psh7=0
     mh1_h7 = deterministic_model(param_set_wt);
     if length(mh1_h7)==time_steps
-        [h7period, h7amplitude]= findPeriodandAmplitude(mh1_h7);
+        [h7period, h7amplitude]= findPeriodandAmplitude(mh1_h7(1,:));
         
         her7_mutant_amplitude = (h7amplitude/wamplitude > 0.1) && (h7amplitude/wamplitude < 0.4);
         her7_mutant_period = (h7period/wperiod > 0.97) && ((h7period/wperiod) < 1.03);
@@ -133,11 +125,14 @@ param_set_wt = x;
         f=f+her7_mutant_period + her7_mutant_amplitude;
         if ~her7_mutant_amplitude
             disp('~her7_mutant_amplitude:');
-            disp(her7_mutant_amplitude);
+            disp(h7amplitude);
+            disp('h7amplitude/wamplitude')
+            disp(h7amplitude/wamplitude)
+            
         end
         if ~her7_mutant_period
             disp('~her7_mutant_period:')
-            disp(her7_mutant_period);
+            disp(h7_mutant_period);
         end
     else
         disp('length(mh1_h7)~=time_steps')
@@ -151,7 +146,7 @@ param_set_wt = x;
     mh1_h6 = deterministic_model(param_set_wt);
     
     if length(mh1_h6)==time_steps
-        [h6period, h6amplitude]= findPeriodandAmplitude(mh1_h6);
+        [h6period, h6amplitude]= findPeriodandAmplitude(mh1_h6(1,:));
         
         her6_mutant_amplitude = (h6amplitude/wamplitude > 0.85) && (h6amplitude/wamplitude < 1.15);
         her6_mutant_period = ((h6period / wperiod) > 1.05) && ((h6period / wperiod) < 1.07);
@@ -159,11 +154,11 @@ param_set_wt = x;
         f=f+her6_mutant_period + her6_mutant_amplitude;
         if ~her6_mutant_amplitude
             disp('~her6_mutant_amplitude:');
-            disp(her6_mutant_amplitude);
+            disp(h6_mutant_amplitude);
         end
         if ~her6_mutant_period
             disp('~her6_mutant_period:')
-            disp(her6_mutant_period);
+            disp(h6period);
         end
         else
         disp('length(mh1_h6)~=time_steps')
@@ -179,7 +174,7 @@ param_set_wt = x;
     mh1_h76 = deterministic_model(param_set_wt);
     
     if length(mh1_h76)==time_steps
-    [h76period, h76amplitude]= findPeriodandAmplitude(mh1_h76);
+    [h76period, h76amplitude]= findPeriodandAmplitude(mh1_h76(1,:));
     
     her76_mutant_amplitude = (h76amplitude/wamplitude > 0.85) && (h76amplitude/wamplitude < 1.15);
     her76_mutant_period = ((h76period / wperiod) > 1.05) && ((h76period / wperiod) < 1.07);
@@ -187,11 +182,11 @@ param_set_wt = x;
     f=f+her76_mutant_period + her76_mutant_amplitude;
         if ~her76_mutant_amplitude
             disp('~her76_mutant_amplitude:');
-            disp(her76_mutant_amplitude);
+            disp(h76amplitude);
         end
         if ~her76_mutant_period
             disp('~her76_mutant_period:')
-            disp(her76_mutant_period);
+            disp(h76period);
         end
     else
         disp('length(mh1_h76)~=time_steps')

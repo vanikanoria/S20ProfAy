@@ -7,7 +7,7 @@ function mh1 = deterministic_model(param_set)
 %thus indicating that the model doesn't work
 global time_steps;
 minutes=600; %1200;
-eps = 0.01; %time step to be used for Euler's method, default is 0.01
+global eps; %time step to be used for Euler's method, default is 0.01
 time_steps = (minutes / eps);
 
 % Set the amount of time steps to be used in the simulation
@@ -165,7 +165,6 @@ critpd=param_set(44);
             
             
             if (ph11(i,n) < 0 || ph17(i,n) < 0 || ph16(i,n) < 0 || ph77(i,n) < 0 || ph76(i,n) < 0 || ph66(i,n) < 0 || pd(i,n) < 0)
-                disp('ph11(i,n),ph17(i,n),ph16(i,n),ph77(i,n),ph76(i,n),ph66(i,n),pd(i,n)<0');
                 disp(ph11(i,n),ph17(i,n),ph16(i,n),ph77(i,n),ph76(i,n),ph66(i,n),pd(i,n));
                 mh1=0;
                 return;
@@ -205,8 +204,6 @@ critpd=param_set(44);
             
             %checking for negative mRNA levels
             if (mh1(i,n) < 0 || mh7(i,n) < 0 || mh6(i,n) < 0 || md(i,n) < 0)
-                disp('(mh1(i,n) < 0 || mh7(i,n) < 0 || mh6(i,n) < 0 || md(i,n) < 0)');
-                disp(mh1(i,n),mh7(i,n),mh6(i,n),md(i,n))
                 mh1=0;
                 return;
             end

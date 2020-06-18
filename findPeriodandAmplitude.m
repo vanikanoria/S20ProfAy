@@ -1,6 +1,8 @@
 function [period, amplitude]= findPeriodandAmplitude(mh1)
 
 global time_steps;
+global eps;
+eps=0.01;
     
     %  Calculates the oscillation features -- period, amplitude and peak to trough
 %  ratio for a set of concentration levels.
@@ -28,7 +30,14 @@ global time_steps;
             mminlast = mh1(1,n);
         end
     end
-    
+    disp('tmaxlast=')
+    disp(tmaxlast)
+    disp('tminlast=')
+    disp(tminlast)
+     disp('mmaxlast=')
+    disp(mmaxlast)
+    disp('mminlast=')
+    disp(mminlast);
 	period = tmaxlast-tmaxpenult;
 	amplitude = mmaxlast-mminlast;
 end
