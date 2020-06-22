@@ -122,6 +122,30 @@ function [] = update_propensities(y)
     end
 end
     
+% partition of the reactions (zero = deterministic, one = stochastic)
+partition = zeros(num_reactions,1);
+a_partition       = 0;  % all reactions with propensities less than 'asd_dflt' will be treated stochastically, otherwise deterministically
+y_partition       = 0;	% all reactions with any reactant level less than 'ysd_dflt' will be treated stochastically, otherwise deterministically
+
+% 1 means stochastic and 0 means deterministic
+function [] = set_partition(y)
+
+    update_propensities(y);
+    for r = 1:num_reactions
+        if a(r) < a_partition
+            partition(r) = 1;
+        else
+            Reactants = V(r-2).reactants;
+            for s = 1:length(Reactants)
+                if R(Reactants(s),r) && y(Reactants(s)) < y_partition
+                    partition(r) = 1;
+                    break
+                end
+            end
+        end
+    end
+end
+
 
         
 function [value,isterminal,direction] = events(t,y)
