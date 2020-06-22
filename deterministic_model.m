@@ -13,7 +13,6 @@ time_steps = (minutes / eps);
 % Set the amount of time steps to be used in the simulation
 max_prop = inf; % maximum threshold for propensity functions, default is INFINITY
 
-
 psh1=param_set(1); 
 psh6=param_set(2);
 psh7=param_set(3);
@@ -141,7 +140,6 @@ critpd=param_set(44);
             %break out of the nested for-loops of any of them if any of the
             %checking for protein levels becoming negative
             if (ph1(i,n) < 0 || ph7(i,n) < 0 || ph6(i,n) < 0) 
-                disp('(ph1(i,n) < 0 || ph7(i,n) < 0 || ph6(i,n) < 0)');
                 disp(ph1(i,n),ph7(i,n),ph6(i,n));
                 mh1=0;
                 return;
@@ -165,7 +163,6 @@ critpd=param_set(44);
             
             
             if (ph11(i,n) < 0 || ph17(i,n) < 0 || ph16(i,n) < 0 || ph77(i,n) < 0 || ph76(i,n) < 0 || ph66(i,n) < 0 || pd(i,n) < 0)
-                disp(ph11(i,n),ph17(i,n),ph16(i,n),ph77(i,n),ph76(i,n),ph66(i,n),pd(i,n));
                 mh1=0;
                 return;
             end
