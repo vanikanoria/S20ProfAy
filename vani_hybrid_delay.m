@@ -8,6 +8,15 @@ num_states = 14;
 num_reactions = 34;
 cells=1; %rows*columns; %two in this case
 
+s = cell(6);
+each_cell={inf};
+% Time for each delayed reaction is scheduled in these vectors.
+s(:)=each_cell;
+
+global Td;
+Td = zeros(8); % Number of scheduled delayed reactions by reaction number.
+% e.g. number of scheduled number 3 reactions = Td(3)
+
 % choose time discretization of output (w.r.t. days)
 minutes=6;%600;
 step=1; 
@@ -20,7 +29,8 @@ t=0;
 
 % setting partition of the reactions (zero = deterministic, one = stochastic)
 partition = zeros(num_reactions,1);
-partition(1:8) = 1;
+partition(1:6) = 1;
+partition(8)=1;
 % 1 means stochastic and 0 means deterministic
 
 R = get_R();
@@ -43,7 +53,7 @@ nmd_eps=round(nmd/eps);nph1_eps=round(nph1/eps);
 nph6_eps=round(nph6/eps);nph7_eps=round(nph7/eps);
 npd_eps=round(npd/eps);
 
-%functions to calculate the transcription rates of mRNA
+%functions to calculate the transcription rates of mrA
 fd=@(ph11,ph76) msd/(1+(ph11/critph11)^2+(ph76/critph76)^2);
 fh1=@(ph11,ph76,pd)msh1*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/critph76)^2);
 fh7=@(ph11,ph76,pd)msh7*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/critph76)^2);
@@ -137,10 +147,11 @@ end
 end
 
 % perform stochastic reaction event
-function y = perform_stochastic_reaction_event(y)
+function [y,s] = perform_stochastic_reaction_event(y)
     a = get_propensities(y);                            % compute propensities of all reactions
     a = partition.*a;                           % take only stochastic reactions
     r = find(cumsum(a) >= sum(a)*rand,1);       % and choose a reaction (first reaction algorithm by Gillespie)
+    s = start_delayed_reaction(r);
     %r : number of reaction that is carried out
     y = [max(y(1:end-1)+R(:,r)',0) log(rand)];	% update species levels accordingly and draw new random number
     %R = sparse(num_states, num_reactions);
@@ -148,6 +159,60 @@ function y = perform_stochastic_reaction_event(y)
     %R(:,r)' is a row vector
 end
 
+    function s = start_delayed_reaction(r)
+        
+        if r==1 % Reaction 1: mh1 -> ph1
+            s{r} = s{r} (1:Td(1) - 1);
+            s{r} = [s{r}, nph1, inf];
+            Td(1)=Td(1)+1;
+            
+        elseif r==2 % Reaction 2: mh7 -> ph7
+            s{r} = s{r} (1:Td(2) - 1);
+            s{r} = [s{r}, nph7, inf];
+            Td(2)=Td(2)+1;
+            
+        elseif r==3 % // Reaction 3: mh6 -> ph6
+            s{r} = s{r} (1:Td(3) - 1);
+            s{r} = [s{r}, nph6, inf];
+            Td(3)=Td(3) + 1;
+            
+        elseif r==4 % // Reaction 4: md -> pd
+            s{r} = s{r} (1:Td(4) - 1);
+            s{r} = [s{r}, npd, inf];
+            Td(4) = Td(4) + 1;
+        end
+        
+        if r==5 % // Reaction 5: -> mh1
+            s{r} = s{r} (1:Td(5) - 1);
+            s{r} = [s{r}, nmh1, inf];
+            Td(5) = Td(5) + 1;
+        end
+        
+        if r==6 % Reaction 6: -> mh7
+            s{r} = s{r} (1:Td(6) - 1);
+            s{r} = [s{r}, nmh7, inf];
+            Td(6) = Td(6) + 1;
+        end
+        
+        %   if r==7  % Reaction 7: -> mh6
+        %      s{r} = s{r} (1:Td(7) - 1);
+        %      s{r} = [s{r}, nmd, inf];
+        %      Td(7) = Td(7) + 1;
+        %   end
+        
+        if r==8 % // Reaction 8: -> md
+            s{r} = s{r} (1:Td(8) - 1);
+            s{r} = [s{r}, nmd, inf];
+            Td(8) = Td(8) + 1;
+        end
+    end
+    
+    function [y,s] = end_delayed_reaction(r)
+        s{ck}=s{ck}(2:Td(r));
+        Td(r) = Td(r)-1;
+        y = [max(y(1:end-1)+R(:,r)',0) log(rand)];
+    end
+    
 Y=zeros(num_steps,num_states);
 % set ode options
 options = odeset('Events',@events,'NonNegative',1:num_states);
@@ -160,8 +225,7 @@ while t < Tend
     % find te until next stochastic reaction or integrate until the end of
     % the step
     [t,y,te,ye,ie] = ode45(@find_next_stochastic_reaction,[t T(step)],y,options);
-    %     [Delta RN] = min([t(1,:),s{1,1}(1),s{1,2}(1),s{1,3}(1), s{1,4}(1), s{1,5}(1), s{1,6}(1), t(2,:),s{2,1}(1),s{2,2}(1),s{2,3}(1),s{2,4}(1),s{2,5}(1),s{2,6}(1)]);
-    %
+    
     %     tau_n = min(te, delayed reactions)
     % check for events
     %ie: index of triggered event function
@@ -172,10 +236,18 @@ while t < Tend
             error('ODEsolution:Events','\nMore than one event detected.');
         else
             % update time
+            [tau_n r] = min([te,s{1}(1),s{2}(1),s{3}(1), s{4}(1), s{5}(1), s{6}(1), s{8}(1)]); 
+            
+            if Delta==te
             t = te;
             
             % handle event
-            y = perform_stochastic_reaction_event(ye);
+            [y,s] = perform_stochastic_reaction_event(ye);
+            else
+                r=r-1; %to account for the te before the s elements
+                [y,s] =end_delayed_reaction(r);
+                t=t+tau_n;
+            end
         end
         
         % write output if necesarry
