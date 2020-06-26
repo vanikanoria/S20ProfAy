@@ -1,4 +1,4 @@
-function Y = vani_hybrid(x)
+function [Y] = vani_hybrid_delay(x)
 % hybrid model for a single cell system
 %x: parameter set
 % size of parameter set = 44 x 1
@@ -6,19 +6,20 @@ function Y = vani_hybrid(x)
 % set system specific parameters
 num_states = 14;
 num_reactions = 34;
-cells=1; %rows*columns; %two in this case
+num_cells=1; %rows*columns; %two in this case
 
-s = cell(6);
+s = cell(8,1);
 each_cell={inf};
 % Time for each delayed reaction is scheduled in these vectors.
-s(:)=each_cell;
-
+s(:,1)=each_cell;
+global a;
+%global s;?
 global Td;
 Td = zeros(8); % Number of scheduled delayed reactions by reaction number.
 % e.g. number of scheduled number 3 reactions = Td(3)
 
 % choose time discretization of output (w.r.t. days)
-minutes=6;%600;
+minutes=60;%600;
 step=1; 
 %step size at which data is stored (1 minute)
 num_steps=minutes/step;
@@ -32,6 +33,11 @@ partition = zeros(num_reactions,1);
 partition(1:6) = 1;
 partition(8)=1;
 % 1 means stochastic and 0 means deterministic
+
+%delayed_set = zeros(num_reactions,1);
+delayed_set = partition; %CAN BE CHANGED TO ACCOUNT FOR REACTIONS that are
+%stochastic but not delayed.
+%1 means delayed and 0 means not delayed
 
 R = get_R();
 % net changes in species levels caused by firing of the reactions
@@ -59,13 +65,14 @@ fh1=@(ph11,ph76,pd)msh1*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/
 fh7=@(ph11,ph76,pd)msh7*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/critph76)^2);
 
 function a = get_propensities(y)
-    a = zeros([34,1]); % Initialize the propensity levels for each reaction for cell.
+    a = zeros([num_reactions,1]); % Initialize the propensity levels for each reaction for cell.
     
-    %The different molecule types are: [ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
+    %The different molecule types are: 
+    %[ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
     ph1=y(1);ph7=y(2);ph6=y(3);pd=y(4);mh1=y(5);mh7=y(6);mh6=y(7);md=y(8);
     ph11=y(9);ph76=y(10);ph17=y(11);ph16=y(12);ph77=y(13);ph66=y(14);
     
-    for ck=1
+    for ck=num_cells
         a(1,ck) = psh1*mh1(ck); % Reaction 01: mh1 -> ph1
         a(2,ck) = psh7*mh7(ck);% // Reaction 2: mh7 -> ph7
         a(3,ck) = psh6*mh6(ck); % // Reaction 3: mh6 -> ph6
@@ -103,13 +110,6 @@ function a = get_propensities(y)
     end
 end
 
-% event function of stochastic reaction
-function [value,isterminal,direction] = reaction_event(y)
-    value      = y(end); %random number
-    isterminal = 1;
-    direction  = 1;
-end
-
 % The output arguments value, isterminal, and direction are vectors whose 
 % ith element corresponds to the ith event:
 % value(i) is a mathematical expression describing the ith event. 
@@ -119,47 +119,34 @@ end
 % direction(i) = 0 if all zeros are to be located (the default).
 % A value of +1 locates only zeros where the event function is increasing, 
 % and -1 locates only zeros where the event function is decreasing.
-function [value,isterminal,direction] = events(t,y)
-    
-    [v1,i1,d1] = reaction_event(y);
+function [value,isterminal,direction] = events(t,x)
 
-    value      = v1;
-    isterminal = i1;
-    direction  = d1;
+    value      = x;
+    isterminal = 1;
+    direction  = 1;
 end
-
-    function ydot = find_next_stochastic_reaction(t,y)
-    % compute right hand side
     
-    % get propensities
-    a = get_propensities(y);
-    ydot = [R*((1-partition).*a); partition'*a];
-    %partition'*a has dimension 1 x 1
-    % it is the sum of propensities of all the stochastic reactions
-    
-    %partition = zeros(num_reactions,1);
-    %R = sparse(num_states, num_reactions);
-    %a = num_reactions x 1
-    %ydot = [R*((1-partition).*a); partition'*a]; %the deterministic parts and then the stochastic parts
-    %[R*((1-partition).*a) has dimension num_states x 1
-    %partition'*a has dimension 1 x 1
-    % it is the sum of propensities of all the stochastic reactions
-end
+%     function ydot = find_next_stochastic_reaction(t,y)
+%     % compute right hand side
+%     
+%     % get propensities
+%     a = get_propensities(y);
+%     ydot = [R*((1-partition).*a); partition'*a];
+%     %partition'*a has dimension 1 x 1
+%     % it is the sum of propensities of all the stochastic reactions
+%     
+%     %partition = zeros(num_reactions,1);
+%     %R = sparse(num_states, num_reactions);
+%     %a = num_reactions x 1
+%     %ydot = [R*((1-partition).*a); partition'*a]; %the deterministic parts and then the stochastic parts
+%     %[R*((1-partition).*a) has dimension num_states x 1
+%     %partition'*a has dimension 1 x 1
+%     % it is the sum of propensities of all the stochastic reactions
+% end
 
-% perform stochastic reaction event
-function [y,s] = perform_stochastic_reaction_event(y)
-    a = get_propensities(y);                            % compute propensities of all reactions
-    a = partition.*a;                           % take only stochastic reactions
-    r = find(cumsum(a) >= sum(a)*rand,1);       % and choose a reaction (first reaction algorithm by Gillespie)
-    s = start_delayed_reaction(r);
-    %r : number of reaction that is carried out
-    y = [max(y(1:end-1)+R(:,r)',0) log(rand)];	% update species levels accordingly and draw new random number
-    %R = sparse(num_states, num_reactions);
-    %so R(:,r) is the change in states due to reaction r
-    %R(:,r)' is a row vector
-end
 
-    function s = start_delayed_reaction(r)
+
+    function s = start_delayed_reaction(r,s)
         
         if r==1 % Reaction 1: mh1 -> ph1
             s{r} = s{r} (1:Td(1) - 1);
@@ -180,52 +167,80 @@ end
             s{r} = s{r} (1:Td(4) - 1);
             s{r} = [s{r}, npd, inf];
             Td(4) = Td(4) + 1;
-        end
-        
-        if r==5 % // Reaction 5: -> mh1
+            
+        elseif r==5 % // Reaction 5: -> mh1
             s{r} = s{r} (1:Td(5) - 1);
             s{r} = [s{r}, nmh1, inf];
             Td(5) = Td(5) + 1;
-        end
-        
-        if r==6 % Reaction 6: -> mh7
+       
+        elseif r==6 % Reaction 6: -> mh7
             s{r} = s{r} (1:Td(6) - 1);
             s{r} = [s{r}, nmh7, inf];
             Td(6) = Td(6) + 1;
-        end
-        
         %   if r==7  % Reaction 7: -> mh6
         %      s{r} = s{r} (1:Td(7) - 1);
         %      s{r} = [s{r}, nmd, inf];
         %      Td(7) = Td(7) + 1;
         %   end
         
-        if r==8 % // Reaction 8: -> md
+        elseif r==8 % // Reaction 8: -> md
             s{r} = s{r} (1:Td(8) - 1);
             s{r} = [s{r}, nmd, inf];
             Td(8) = Td(8) + 1;
         end
     end
     
-    function [y,s] = end_delayed_reaction(r)
-        s{ck}=s{ck}(2:Td(r));
+    % perform stochastic reaction event
+    function [y,s] = perform_stochastic_reaction(y,s)
+    a = get_propensities(y);    % compute propensities of all reactions
+    stochastic_a = partition.*a;  % take only stochastic reactions
+    % and choose a reaction (first reaction algorithm by Gillespie)
+    r = find(cumsum(stochastic_a) >= sum(stochastic_a)*rand,1); 
+    %r : number of reaction that is carried out
+    if delayed_set(r)==1
+        s = start_delayed_reaction(r,s);
+    else
+        y = max(y+R(:,r)',0); % log(rand)];	
+    end
+    
+    %if it is not delayed...
+   % update species levels accordingly and draw new random number
+    %R = sparse(num_states, num_reactions);
+    %so R(:,r) is the change in states due to reaction r
+    %R(:,r)' is a row vector
+    end
+    
+    function [y,s] = end_delayed_reaction(r,s,y)
+        s{r}=s{r}(2:Td(r));
         Td(r) = Td(r)-1;
-        y = [max(y(1:end-1)+R(:,r)',0) log(rand)];
+        y = max(y+R(:,r)',0) ; 
+    end
+    
+    function dx = find_next_time_step(t,x)   
+         dx=partition'*a;
+    end
+    
+    function dy = update_deterministic_reactions(t,y)
+        dy = R*((1-partition).*a); %; partition'*a]; %remove the last part?
+    %size of partition = num_reactions x 1
+    %size of a = num_reactions x 1
     end
     
 Y=zeros(num_steps,num_states);
 % set ode options
-options = odeset('Events',@events,'NonNegative',1:num_states);
+options1 = odeset('Events',@events);
+options2 = odeset('NonNegative',1:num_states);
 % set pseudo-initial species numbers
-y0      = [zeros(num_states,1); log(rand)];
+y0      = zeros(num_states,1); % log(rand)];
 y = y0;     
 step=2;
 while t < Tend
-    
+    a = get_propensities(y);
     % find te until next stochastic reaction or integrate until the end of
     % the step
-    [t,y,te,ye,ie] = ode45(@find_next_stochastic_reaction,[t T(step)],y,options);
-    
+    %xe: value of x at 
+    [~,~,te,ye,ie] = ode45(@find_next_time_step,[t T(step)],log(rand),options1);
+  
     %     tau_n = min(te, delayed reactions)
     % check for events
     %ie: index of triggered event function
@@ -235,36 +250,58 @@ while t < Tend
         if length(ie) > 1
             error('ODEsolution:Events','\nMore than one event detected.');
         else
-            % update time
-            [tau_n r] = min([te,s{1}(1),s{2}(1),s{3}(1), s{4}(1), s{5}(1), s{6}(1), s{8}(1)]); 
+            %check if a delayed reaction is ending or another stochastic
+            %reaction is initiated.
+            %compare the time before event ye (at te) and remaining delay
+            %times
+            [tau_n, r] = min([te-t ,s{1}(1),s{2}(1),s{3}(1), s{4}(1), s{5}(1), s{6}(1), s{8}(1)]); 
             
-            if Delta==te
+            if r==1 %i.e if starting a stochastic reaction
+            
+            % upda
+            %update deterministic reactions until that point
+            [t,y] = ode45(@update_deterministic_reactions,[t te],y,options2);
+            % handle event
+            [y,s] = perform_stochastic_reaction(y(end,:),s);
+           
+            % update time
             t = te;
             
-            % handle event
-            [y,s] = perform_stochastic_reaction_event(ye);
             else
+               % get a delayed reaction --> finish it
                 r=r-1; %to account for the te before the s elements
-                [y,s] =end_delayed_reaction(r);
+                [y,s] =end_delayed_reaction(r,s,y);
+                 % update time
                 t=t+tau_n;
+                
             end
+            
+            %update delay times
+        for rn=1:6
+            s{rn}=s{rn}-tau_n;
+        end
+            
         end
         
         % write output if necesarry
         if t == T(step)
             Y(step,:)  = y(1:num_states);
             step       = step+1;
-            step
         end
         
         % no event
     else
-        t  = t(end);    % update time
-        y  = y(end,:);	% and state
+%         t  = t;    % update time
+%         y  = y;	% and state
         
+
         % write output
         Y(step,:)  = y(1:num_states);
+        %mh1
         step       = step+1;
+    end
+    if step ==num_steps
+        break;
     end
 end
 end
