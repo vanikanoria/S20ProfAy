@@ -30,14 +30,6 @@ eps=0.01;
             mminlast = mh1(1,n);
         end
     end
-    disp('tmaxlast=')
-    disp(tmaxlast)
-    disp('tminlast=')
-    disp(tminlast)
-     disp('mmaxlast=')
-    disp(mmaxlast)
-    disp('mminlast=')
-    disp(mminlast);
 	period = tmaxlast-tmaxpenult;
 	amplitude = mmaxlast-mminlast;
 end

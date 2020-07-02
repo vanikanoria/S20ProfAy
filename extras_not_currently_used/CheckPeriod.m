@@ -1,5 +1,5 @@
 function [period, amplitude, sustainedOscillations]= checkPeriodAndAmplitude(mh1,is_wildtype)
-    
+   global time_steps; 
     %  Calculates the oscillation features -- period, amplitude and peak to trough
 %  ratio for a set of concentration levels.
 %  The values are calculated using the last peak and trough of the oscillations,
@@ -10,7 +10,7 @@ function [period, amplitude, sustainedOscillations]= checkPeriodAndAmplitude(mh1
     tmaxlast = 0; tmaxpenult = 0; mmaxlast = 0; mmaxpenult = 0;
 	tminlast = 0; tminpenult = 0; mminlast = 0; mminpenult = 0;
 		
-    for n = 1:1:nfinal - 1
+    for n = 1:1:time_steps - 1
         % check if the current point is a peak
         if mh1(0,n + 1) < mh1(0,n) && mh1(0,n) > mh1(0,n-1)
             tmaxpenult = tmaxlast;
@@ -19,7 +19,7 @@ function [period, amplitude, sustainedOscillations]= checkPeriodAndAmplitude(mh1
             mmaxlast = mh1(0,n);
         end
         % check if the current point is a trough
-        if (mh1(0,n+1) > mh1(0,n) && mh1(0,n) < mh1(0,n-1)
+        if (mh1(0,n+1) > mh1(0,n) && mh1(0,n) < mh1(0,n-1))
             tminpenult = tminlast;
             tminlast = n * eps;
             mminpenult = mminlast;

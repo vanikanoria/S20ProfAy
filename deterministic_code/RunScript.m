@@ -1,6 +1,6 @@
 %%
-ppn = 32;
-totalProcs = 31;
+ppn = 16;
+totalProcs = 15;
 %ClusterInfo.setQueueName('matlab');
 %ClusterInfo.setProcsPerNode(ppn);
 c = parcluster;
