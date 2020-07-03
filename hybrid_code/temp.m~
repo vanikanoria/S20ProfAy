@@ -1,0 +1,2 @@
+
+[tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y; logrand],options3);

@@ -47,8 +47,8 @@ param_set_wt(:,4,3)=0; %her7 mutant
 param_set_wt(:,5,2)=0; %her6 mutant
 param_set_wt(:,6,3)=0;param_set_wt(:,6,2)=0;%her6 and her7 mutant
 wperiod=0;wamplitude=0;
-%parfor k=1:testPop % FOR TESTING WE COMMENT OUT
- for k=1:testPop % FOR TESTING WE UNCOMMENT
+parfor k=1:testPop % FOR TESTING WE COMMENT OUT
+ %for k=1:testPop % FOR TESTING WE UNCOMMENT
     wperiod=0;wamplitude=0;
     %fprintf("Simulating parameter set %i: \n",k); % Used for creating output file names specific to the paramater
     
