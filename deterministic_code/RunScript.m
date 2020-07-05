@@ -6,7 +6,7 @@ totalProcs = 15;
 c = parcluster;
 
 %%
-job174 = c.batch(@maximizeVertSeg,4,{},'Pool',totalProcs,'AttachedFiles',{'/Users/vani/Documents/MATLAB/VertSeg/S20ProfAy/deterministic_code'});
+job174 = c.batch(@maximizeVertSeg,4,{},'Pool',totalProcs,'AttachedFiles',{'/Users/vani/Documents/MATLAB/VertSeg/S20ProfAy'});
 
 
 %%

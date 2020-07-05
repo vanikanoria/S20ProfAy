@@ -218,6 +218,7 @@ while t < Tend
             reaction=8;
         end
         
+        
         [y,s] = end_delayed_reaction(y,s,reaction);
     end    
     for rn=[1:6,8]

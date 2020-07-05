@@ -58,7 +58,7 @@ function a = get_propensities(y)
     % cells
     a = zeros(num_reactions,num_cells); % Initialize the propensity levels for each reaction for cell.
     
-    diff = num_reactions;
+    diff = num_states;
     
     % The different molecule types are: 
     % [ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
@@ -210,8 +210,7 @@ stocnum = size(stochreactions,2); %returns the length of dimension 2 of stochrea
 global logrand;
 
 logrand=log(rand(stocnum*num_cells,1)); %here logrand has 24 rows
-y0 = [ones(num_states*num_cells,1); logrand];
-%y0      = [ones(num_states,1); log(rand)];
+y0 = [ones(num_cells*num_states,1); logrand];
 y = y0; 
 step=2;
 num_delayed=7; %number of types of delayed reactions per cell
@@ -223,19 +222,8 @@ while t < Tend
         tau_n=1;
     end
     
-    if reaction > num_delayed %this means it's cell number 2
-        reaction = reaction-num_delayed;
-        cell_num=2;
-    else
-        cell_num=1;
-    end
     
-    if reaction==7
-        reaction=8;
-    end
-    
-    y
-    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],y,options);
+    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y(1:num_cells*num_states); logrand],options);
     %logrand(1:stocnum) = ye(1,num_states+1:end)';
     
     if ~isempty(ie) % event occurs
@@ -243,20 +231,40 @@ while t < Tend
        tau_n=tsol(end)-t;           
        t=te;
        r=stochreactions(ie);
+       if r > stocnum %this means it's cell number 2
+           r = r-stocnum;
+           cell_num=2;
+       else
+           cell_num=1;
+       end
        [y,s] = perform_stochastic_reaction(y,s,r,cell_num);
        logrand=ye(num_states*num_cells+1:end)';
-       logrand(ie)=log(rand);   %changing the 
+       logrand(ie)=log(rand);   %changing the random number of ie?
             if length(ie) > 1 || ie>num_states*num_cells
              error('ODEsolution:Events','\nMore than one event detected.');
             end
     else
         y=ysol(end,1:num_states*num_cells)';
+        
+        if reaction > num_delayed %this means it's cell number 2
+            reaction = reaction-num_delayed;
+            cell_num=2;
+        else
+            cell_num=1;
+        end
+    
+        if reaction==7
+            reaction=8;
+        end
+        %so y has only the states of the two cells and not the random
+        %number
         t=tsol(end,1);
         logrand=ysol(end,num_states*num_cells+1:end)';
         
         [y,s] = end_delayed_reaction(y,s,reaction,cell_num);
-    end    
+    end
     
+    %need to add logrand to y
     for cell_num=1:num_cells
         for rn=[1:6,8]
             s{rn,cell_num}=s{rn,cell_num}-tau_n;

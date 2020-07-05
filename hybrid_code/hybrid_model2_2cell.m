@@ -14,7 +14,7 @@ global Td;
 Td = ones(8,num_cells); % Number of scheduled delayed reactions by reaction number.
 
 % Choose time discretization of output (w.r.t. minutes)
-minutes=100;%600;
+minutes=30;%600;
 step=1; % Step size at which data is stored (1 minute)
 num_steps=minutes/step;
 Tend=minutes; % More clear variable name;
@@ -50,65 +50,13 @@ fd=@(ph11,ph76) msd/(1+(ph11/critph11)^2+(ph76/critph76)^2);
 fh1=@(ph11,ph76,pd)msh1*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/critph76)^2);
 fh7=@(ph11,ph76,pd)msh7*(1+(pd/critpd))/(1+(pd/critpd)+(ph11/critph11)^2 +(ph76/critph76)^2);
 
-% 
-%     function a = get_propensities(y)
-%         a = zeros(num_reactions,num_cells); % Initialize the propensity levels for each reaction for cell.
-%         
-%         % The different molecule types are:
-%         % [ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
-%         ph1=y(1,:);ph7=y(2,:);ph6=y(3,:);pd=y(4,:);mh1=y(5,:);mh7=y(6,:);mh6=y(7,:);md=y(8,:);
-%         ph11=y(9,:);ph76=y(10,:);ph17=y(11,:);ph16=y(12,:);ph77=y(13,:);ph66=y(14,:);
-%         
-%         %In case of num_cells=2: we take pd levels of the other cell into
-%         %account in reactions number 5 and 6
-%         %ck_other = 3-ck; %if ck=1: ck_other=2; if ck=2: ck_other=1
-%         % need to be modified in case of num_cells ~= 2:
-%         
-%         for ck=1:num_cells
-%             a(1,ck) = psh1*mh1(ck); % Reaction 01: mh1 -> ph1
-%             a(2,ck) = psh7*mh7(ck);% // Reaction 2: mh7 -> ph7
-%             a(3,ck) = psh6*mh6(ck); % // Reaction 3: mh6 -> ph6
-%             a(4,ck) = psd*md(ck); % // Reaction 4: md -> pd
-%             a(5,ck)= fh1(ph11(ck),ph76(ck),pd(3-ck)); % // Reaction 5: -> mh1
-%             a(6,ck)= fh7(ph11(ck),ph76(ck),pd(3-ck)); % // Reaction 6: -> mh7
-%             a(7,ck) = msh6; % // Reaction 7: -> mh6
-%             a(8,ck)= fd(ph11(ck),ph76(ck));% // Reaction 8: -> md
-%             a(9,ck) = pdh1*ph1(ck); % Reaction 02: ph1 ->
-%             a(10,ck) = pdh7*ph7(ck);% // Reaction 10: ph7 ->
-%             a(11,ck) = dah7h7*ph7(ck)*(ph7(ck)-1)/2;% // Reaction 11: ph7+ph7 -> ph77
-%             a(12,ck) = ddh7h7*ph77(ck); % // Reaction 12: ph77 -> ph7+ph7
-%             a(13,ck) = dah7h6*ph7(ck)*ph6(ck);% // Reaction 6: ph7+ph6 -> ph76
-%             a(14,ck) = ddh7h6*ph76(ck); % // Reaction 14: ph76 -> ph7+ph6
-%             a(15,ck) = dah1h1*ph1(ck)*(ph1(ck)-1)/2; % Reaction 03: ph1+ph1 -> ph11
-%             a(16,ck) = pdh6*ph6(ck); % // Reaction 16: ph6 ->
-%             a(17,ck) = dah6h6*ph6(ck)*(ph6(ck)-1)/2; % // Reaction 17: ph6+ph6 -> ph66
-%             a(18,ck) = ddh6h6*ph66(ck); % // Reaction 18: ph66 -> ph6+ph6
-%             a(19,ck) = pdh1*ph11(ck); % // Reaction 19: ph11 ->
-%             a(20,ck) = pdh1*ph17(ck); % // Reaction 20: ph17 ->
-%             a(21,ck) = pdh1*ph16(ck); % // Reaction 21: ph16 ->
-%             a(22,ck) = pdh1*ph77(ck); % // Reaction 22: ph77 ->
-%             a(23,ck) = pdh1*ph76(ck); % // Reaction 23: ph76 ->
-%             a(24,ck) = pdh1*ph66(ck); % // Reaction 24: ph66 ->
-%             a(25,ck) = ddh1h1*ph11(ck); %  Reaction 04: ph11 -> ph1+ph1
-%             a(26,ck) = pdd*pd(ck); % // Reaction 26: pd ->
-%             a(27,ck) = dah1h7*ph1(ck)*ph7(ck); % Reaction 05: ph1+ph7 -> ph17
-%             a(28,ck) = mdh1*mh1(ck); % // Reaction 28: mh1 ->
-%             a(29,ck) = ddh1h7*ph17(ck); % Reaction 06: ph17 -> ph1+ph7
-%             a(30,ck) = mdh7*mh7(ck); % // Reaction 30: mh7 ->
-%             a(31,ck) = dah1h6*ph1(ck)*ph6(ck); % // Reaction 07: ph1+ph6 -> ph16
-%             a(32,ck) = mdh6*mh6(ck); %) // Reaction 32: mh6 ->
-%             a(33,ck) = ddh1h6*ph16(ck);% // Reaction 08: ph16 -> ph1+ph6
-%             a(34,ck) = mdd*md(ck); %// Reaction 34: md ->
-%         end
-%     end
-
 function a = get_propensities(y)
     %returns a column vector of size equal to size of y
     % y contains [reactions of cell 1;reactions of cell 2; logrand for both
     % cells
     a = zeros(num_reactions,num_cells); % Initialize the propensity levels for each reaction for cell.
     
-    diff = num_reactions;
+    diff = num_states;
     
     % The different molecule types are: 
     % [ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
@@ -160,7 +108,7 @@ function a = get_propensities(y)
 end
 
 function [value,isterminal,direction] = events(t,y)
-    value      = y(end); %log(rand);
+    value      = y(end); %log(rand)
     isterminal = 1;
     direction  = 1;
 end
@@ -214,7 +162,7 @@ end
     r = find(cumsum(stochastic_a) >= sum(stochastic_a)*rand,1); 
     % r : number of reaction that is carried out
      if r > num_reactions %this means it's cell number 2
-        r = r-num_delayed;
+        r = r-num_reactions;
         cell_num=2;
     else
         cell_num=1;
@@ -223,43 +171,56 @@ end
         s = start_delayed_reaction(r,s,cell_num);
     else  %if it is not delayed...
    % update species levels accordingly and draw new random number
-        y = max(y+R(:,r),0); 	
+         if cell_num ==1
+            y = [max(y(1:num_states)+R(:,r),0);y(num_states+1:end)];
+         else %cell_num==2
+            y = [y(1:num_states);max(y(num_states+1:2*num_states)+R(:,r),0)];
+        end
     end 
     end
     
    function [y,s] = end_delayed_reaction(y,s,r,cell_num)
+        
         s{r,cell_num}=s{r,cell_num}(2:Td(r,cell_num));
         Td(r,cell_num) = Td(r,cell_num)-1;
-        y = max(y(1:num_states,cell_num)+R(:,r),0);
+        
+        if cell_num ==1
+            y = [max(y(1:num_states)+R(:,r),0);y(num_states+1:end)];
+        else
+            y = [y(1:num_states);max(y(num_states+1:end)+R(:,r),0)];
+        end
     end
     
     function ydot = update_ode(t,y)   
         a=get_propensities(y);
-        ydot=[R*((1-partition).*a); partition'*a]; %sum of stochastic propensities
+        a_cell1=a(1:num_reactions);
+        a_cell2=a(num_reactions+1:end);
+        ydot=[R*((1-partition).*a_cell1);R*((1-partition).*a_cell2); partition'*a_cell1 + partition'*a_cell2]; %sum of stochastic propensities
     end
      
-Y=zeros(num_steps, num_states);
+Y=zeros(num_steps, num_states*2);
 % set ode options
 % options1 = odeset('Events',@events);
 % options2 = odeset('NonNegative',1:num_states);
-options3 = odeset('NonNegative',1:num_states,'Events',@events);
+options3 = odeset('NonNegative',1:num_states*2,'Events',@events);
 % set pseudo-initial species numbers
-y0      = [ones(num_states*2,1);log(rand)];
+y0      = [ones(num_states*2,1)];
 y = y0; 
 logrand=log(rand);
 step=2;
+num_delayed=7;
 while t < Tend
     % a = get_propensities(y);
     
-    [tau_n, reaction] = min([s{1}(1),s{2}(1),s{3}(1),s{4}(1),s{5}(1),s{6}(1),s{8}(1)]);
+    [tau_n, reaction] = min([s{1,1}(1),s{2,1}(1),s{3,1}(1),s{4,1}(1),s{5,1}(1),s{6,1}(1),s{8,1}(1),s{1,2}(1),s{2,2}(1),s{3,2}(1),s{4,2}(1),s{5,2}(1),s{6,2}(1),s{8,2}(1)]);
     if tau_n==Inf
         tau_n=1;
     end
-
-    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y; logrand],options3);
+    
+    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y;logrand],options3);
     
     if ~isempty(ie)
-       y=ye(1:num_states)';
+       y=ye(1:num_states*2)';
        logrand=log(rand);
        tau_n=tsol(end)-t;           
        t=te;
@@ -268,31 +229,38 @@ while t < Tend
 %             error('ODEsolution:Events','\nMore than one event detected.');
 %            end
     else
-        logrand = ysol(end,num_states+1);
-        y=ysol(end,1:num_states)';
+        logrand = ysol(end,end);
+        y=ysol(end,1:num_cells*num_states)';
         t=tsol(end);
-        if reaction==7 
+        if reaction > num_delayed %this means it's cell number 2
+            reaction = reaction-num_delayed;
+            cell_num=2;
+        else
+            cell_num=1;
+        end
+    
+        if reaction==7
             reaction=8;
         end
         [y,s] = end_delayed_reaction(y,s,reaction,cell_num);
     end
     
     %updating delays
-   for cell_num=1:num_cells
+    for cell_no=1:num_cells
         for rn=[1:6,8]
-            s{rn,cell_num}=s{rn,cell_num}-tau_n;
+            s{rn,cell_no}=s{rn,cell_no}-tau_n;
         end
-   end
-   
-        % write output if necesarry
-        if t/T(step)<1.01&&t/T(step)>0.99
-            Y(step,:,:)  = y(1:num_states,:);
-            step       = step+1;
-            disp(step);
-        end
-        
-       if step > num_steps
-            break;
-       end
+    end
+    
+    % write output if necesarry
+    if t/T(step)<1.01&&t/T(step)>0.99
+        Y(step,:)  = y(1:2*num_states);
+        step       = step+1;
+        disp(step);
+    end
+    
+    if step > num_steps
+        break;
+    end
 end
 end

@@ -160,7 +160,7 @@ function a = get_propensities(y)
 end
 
 function [value,isterminal,direction] = events(t,y)
-    value      = y(end); %log(rand);
+    value      = y(end); %log(rand)
     isterminal = 1;
     direction  = 1;
 end
@@ -226,21 +226,6 @@ end
         y = max(y+R(:,r),0); 	
     end 
     end
-
- % perform stochastic reaction event
-    function [y,s] = perform_stochastic_reaction(y,s,r,cell_num)
-        %a = get_propensities(y);    % compute propensities of all reactions
-        %stochastic_a = partition.*a;  % take only stochastic reactions
-    % Choose a reaction (first reaction algorithm by Gillespie)
-    %r = find(cumsum(stochastic_a) >= sum(stochastic_a)*rand,1); 
-    % r : number of reaction that is carried out
-    if delayed_set(r)==1
-        s = start_delayed_reaction(r,s,cell_num);
-    else  %if it is not delayed...
-   % update species levels accordingly and draw new random number
-        y = max(y(1:num_states,cell_num)+R(:,r),0); 
-    end 
-    end
     
    function [y,s] = end_delayed_reaction(y,s,r,cell_num)
         s{r,cell_num}=s{r,cell_num}(2:Td(r,cell_num));
@@ -250,28 +235,29 @@ end
     
     function ydot = update_ode(t,y)   
         a=get_propensities(y);
-        ydot=[R*((1-partition).*a); partition'*a]; %sum of stochastic propensities
+        a_cell1=a(1:num_reactions);
+        a_cell2=a(num_reactions+1:end);
+        ydot=[R*((1-partition).*a_cell1);R*((1-partition).*a_cell2); partition'*a_cell1 + partition'*a_cell2]; %sum of stochastic propensities
     end
      
-Y=zeros(num_steps, num_states);
+Y=zeros(num_steps, num_states*2);
 % set ode options
-options1 = odeset('Events',@events);
-options2 = odeset('NonNegative',1:num_states);
+% options1 = odeset('Events',@events);
+% options2 = odeset('NonNegative',1:num_states);
 options3 = odeset('NonNegative',1:num_states,'Events',@events);
 % set pseudo-initial species numbers
-y0      = [ones(num_states,1)];
+y0      = [ones(num_states*2,1);log(rand)];
 y = y0; 
-logrand=log(rand);
 step=2;
 while t < Tend
     % a = get_propensities(y);
     
-    [tau_n, reaction] = min([s{1}(1),s{2}(1),s{3}(1),s{4}(1),s{5}(1),s{6}(1),s{8}(1)]);
+    [tau_n, reaction] = min([s{1,1}(1),s{2,1}(1),s{3,1}(1),s{4,1}(1),s{5,1}(1),s{6,1}(1),s{8,1}(1),s{1,2}(1),s{2,2}(1),s{3,2}(1),s{4,2}(1),s{5,2}(1),s{6,2}(1),s{8,2}(1)]);
     if tau_n==Inf
         tau_n=1;
     end
 
-    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y; logrand],options3);
+    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],y,options3);
     
     if ~isempty(ie)
        y=ye(1:num_states)';
@@ -293,15 +279,15 @@ while t < Tend
     end
     
     %updating delays
-   for cell_num=1:num_cells
+   for cell_no=1:num_cells
         for rn=[1:6,8]
-            s{rn,cell_num}=s{rn,cell_num}-tau_n;
+            s{rn,ck}=s{rn,ck}-tau_n;
         end
    end
    
         % write output if necesarry
         if t/T(step)<1.01&&t/T(step)>0.99
-            Y(step,:,:)  = y(1:num_states,:);
+            Y(step,:)  = y(1:2*num_states);
             step       = step+1;
             disp(step);
         end
