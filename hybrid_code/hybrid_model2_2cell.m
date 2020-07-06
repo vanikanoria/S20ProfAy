@@ -14,7 +14,7 @@ global Td;
 Td = ones(8,num_cells); % Number of scheduled delayed reactions by reaction number.
 
 % Choose time discretization of output (w.r.t. minutes)
-minutes=30;%600;
+minutes=20;%600;
 step=1; % Step size at which data is stored (1 minute)
 num_steps=minutes/step;
 Tend=minutes; % More clear variable name;
@@ -257,6 +257,7 @@ while t < Tend
         Y(step,:)  = y(1:2*num_states);
         step       = step+1;
         disp(step);
+        disp(y);
     end
     
     if step > num_steps
