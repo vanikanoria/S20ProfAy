@@ -1,4 +1,4 @@
-function f = findScoreVertSeg(x)
+function f = findStochasticScore(x)
 
 global time_steps;
 global eps;
@@ -181,8 +181,12 @@ param_set_wt = x;
     %add a point for each mutant condition that is satisfied: period and amplitude
     f=f+her76_mutant_period + her76_mutant_amplitude;
         if ~her76_mutant_amplitude
+            disp('~her76_mutant_amplitude:');
+            disp(h76amplitude);
         end
         if ~her76_mutant_period
+            disp('~her76_mutant_period:')
+            disp(h76period);
         end
     else
         disp('length(mh1_h76)~=time_steps')
@@ -199,107 +203,3 @@ param_set_wt = x;
     %  2) Print the parameter set into the output file containing parameter that passed the conditions.
     
 end
-
-%Print the parameter set into the output file containing parameter that passed the conditions.
-
-% for j= 1:testPop
-%     if f(j)>=Cutoff %%adding the paramter sets that exceed the cutoff fitness score
-%         fprintf('The parameter set exceeded the cutoff: f(%i) = %f',j,f(j));
-%         VertGoodSet = [VertGoodSet; x(j,:)]; %#ok<*AGROW>
-%     end
-%     %         if f(j)>= 28.9
-%     %              dlmwrite('SADSets072017Run203.csv',x(j,:),'delimiter',',','-append');
-%     %         end
-% end
-% 
-% 
-% %Constraints. g means something is <= 0
-% g(:,1)=-x(:,1)+Lb(1);
-% g(:,2)=x(:,1)-Ub(1);
-% g(:,3)=-x(:,2)+Lb(2);
-% g(:,4)=x(:,2)-Ub(2);
-% g(:,5)=-x(:,3)+Lb(3);
-% g(:,6)=x(:,3)-Ub(3);
-% g(:,7)=-x(:,4)+Lb(4);
-% g(:,8)=x(:,4)-Ub(4);
-% g(:,9)=-x(:,5)+Lb(5);
-% g(:,10)=x(:,5)-Ub(5);
-% g(:,11)=-x(:,6)+Lb(6);
-% g(:,12)=x(:,6)-Ub(6);
-% g(:,13)=-x(:,7)+Lb(7);
-% g(:,14)=x(:,7)-Ub(7);
-% g(:,15)=-x(:,8)+Lb(8);
-% g(:,16)=x(:,8)-Ub(8);
-% g(:,17)=-x(:,9)+Lb(9);
-% g(:,18)=x(:,9)-Ub(9);
-% g(:,19)=-x(:,10)+Lb(10);
-% g(:,20)=x(:,10)-Ub(10);
-% g(:,21)=-x(:,11)+Lb(11);
-% g(:,22)=x(:,11)-Ub(11);
-% g(:,23)=-x(:,12)+Lb(12);
-% g(:,24)=x(:,12)-Ub(12);
-% g(:,25)=-x(:,13)+Lb(13);
-% g(:,26)=x(:,13)-Ub(13);
-% g(:,27)=-x(:,14)+Lb(14);
-% g(:,28)=x(:,14)-Ub(14);
-% g(:,29)=-x(:,15)+Lb(15);
-% g(:,30)=x(:,15)-Ub(15);
-% g(:,31)=-x(:,16)+Lb(16);
-% g(:,32)=x(:,16)-Ub(16);
-% g(:,33)=-x(:,17)+Lb(17);
-% g(:,34)=x(:,17)-Ub(17);
-% g(:,35)=-x(:,18)+Lb(18);
-% g(:,36)=x(:,18)-Ub(18);
-% g(:,37)=-x(:,19)+Lb(19);
-% g(:,38)=x(:,19)-Ub(19);
-% g(:,39)=-x(:,20)+Lb(20);
-% g(:,40)=x(:,20)-Ub(20);
-% g(:,41)=-x(:,21)+Lb(21);
-% g(:,42)=x(:,21)-Ub(21);
-% g(:,43)=-x(:,22)+Lb(22);
-% g(:,44)=x(:,22)-Ub(22);
-% g(:,45)=-x(:,23)+Lb(23);
-% g(:,46)=x(:,23)-Ub(23);
-% g(:,47)=-x(:,24)+Lb(24);
-% g(:,48)=x(:,24)-Ub(24);
-% g(:,49)=-x(:,25)+Lb(25);
-% g(:,50)=x(:,25)-Ub(25);
-% g(:,51)=-x(:,26)+Lb(26);
-% g(:,52)=x(:,26)-Ub(26);
-% g(:,53)=-x(:,27)+Lb(27);
-% g(:,54)=x(:,27)-Ub(27);
-% g(:,55)=-x(:,28)+Lb(28);
-% g(:,56)=x(:,28)-Ub(28);
-% g(:,57)=-x(:,29)+Lb(29);
-% g(:,58)=x(:,29)-Ub(29);
-% g(:,59)=-x(:,30)+Lb(30);
-% g(:,60)=x(:,30)-Ub(30);
-% g(:,61)=-x(:,31)+Lb(31);
-% g(:,62)=x(:,31)-Ub(31);
-% g(:,63)=-x(:,32)+Lb(32);
-% g(:,64)=x(:,32)-Ub(32);
-% g(:,65)=-x(:,33)+Lb(33);
-% g(:,66)=x(:,33)-Ub(33);
-% g(:,67)=-x(:,34)+Lb(34);
-% g(:,68)=x(:,34)-Ub(34);
-% g(:,69)=-x(:,35)+Lb(35);
-% g(:,70)=x(:,35)-Ub(35);
-% g(:,71)=-x(:,36)+Lb(36);
-% g(:,72)=x(:,36)-Ub(36);
-% g(:,73)=-x(:,37)+Lb(37);
-% g(:,74)=x(:,37)-Ub(37);
-% g(:,75)=-x(:,38)+Lb(38);
-% g(:,76)=x(:,38)-Ub(38);
-% g(:,77)=-x(:,39)+Lb(39);
-% g(:,78)=x(:,39)-Ub(39);
-% g(:,79)=-x(:,40)+Lb(40);
-% g(:,80)=x(:,40)-Ub(40);
-% g(:,81)=-x(:,41)+Lb(41);
-% g(:,82)=x(:,41)-Ub(41);
-% g(:,83)=-x(:,42)+Lb(42);
-% g(:,84)=x(:,42)-Ub(42);
-% g(:,85)=-x(:,43)+Lb(43);
-% g(:,86)=x(:,43)-Ub(43);
-% g(:,87)=-x(:,44)+Lb(44);
-% g(:,88)=x(:,44)-Ub(44);
-% end

@@ -14,7 +14,7 @@ global Td;
 Td = ones(8,num_cells); % Number of scheduled delayed reactions by reaction number.
 
 % Choose time discretization of output (w.r.t. minutes)
-minutes=20;%600;
+minutes=100;%600;
 step=1; % Step size at which data is stored (1 minute)
 num_steps=minutes/step;
 Tend=minutes; % More clear variable name;
@@ -217,6 +217,34 @@ while t < Tend
         tau_n=1;
     end
     
+    while tau_n < 10^(-15)
+        
+        if reaction > num_delayed %this means it's cell number 2
+            reaction = reaction-num_delayed;
+            cell_num=2;
+        else
+            cell_num=1;
+        end
+    
+        if reaction==7
+            reaction=8;
+        end
+        
+        %end the delayed reaction
+        [y,s] = end_delayed_reaction(y,s,reaction,cell_num);
+        
+        %updating delays (s)
+        for cell_no=1:num_cells
+            for rn=[1:6,8]
+                s{rn,cell_no}=s{rn,cell_no}-tau_n;
+            end
+        end
+        %update time
+       
+        [tau_n, reaction] = min([s{1,1}(1),s{2,1}(1),s{3,1}(1),s{4,1}(1),s{5,1}(1),s{6,1}(1),s{8,1}(1),s{1,2}(1),s{2,2}(1),s{3,2}(1),s{4,2}(1),s{5,2}(1),s{6,2}(1),s{8,2}(1)]);      
+    end
+    
+    %when tau_n becomes reasonable
     [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y;logrand],options3);
     
     if ~isempty(ie)
@@ -257,7 +285,6 @@ while t < Tend
         Y(step,:)  = y(1:2*num_states);
         step       = step+1;
         disp(step);
-        disp(y);
     end
     
     if step > num_steps

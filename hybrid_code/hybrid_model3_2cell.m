@@ -15,7 +15,7 @@ global Td;
 Td = ones(8,num_cells); % Number of scheduled delayed reactions by reaction number.
 
 % Choose time discretization of output (w.r.t. minutes)
-minutes=30;%600;
+minutes=100;%600;
 step=1; % Step size at which data is stored (1 minute)
 num_steps=minutes/step;
 Tend=minutes; % More clear variable name;
@@ -112,8 +112,8 @@ end
 function [value,isterminal,direction] = events(t,y)
     value      = y(num_states* num_cells+1:end); %which means the whole of 
     %the logrand part of y
-    isterminal = ones(size(stochreactions,2)*2);
-    direction  = ones(size(stochreactions,2)*2);
+    isterminal = ones(size(stochreactions,2)*2,1);
+    direction  = ones(size(stochreactions,2)*2,1);
 end
     
 function s = start_delayed_reaction(r,s,cell_num)
@@ -195,8 +195,6 @@ function s = start_delayed_reaction(r,s,cell_num)
         a_cell1=a(1:num_reactions);
         a_cell2=a(num_reactions+1:end); 
         ydot=[R*((1-partition).*a_cell1);R*((1-partition).*a_cell2); a_cell1(stochreactions);a_cell2(stochreactions)]; %sum of stochastic propensities
-        ydot
-        size(ydot)
     end
 
 
@@ -222,7 +220,6 @@ while t < Tend
         tau_n=1;
     end
     
-    
     [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y(1:num_cells*num_states); logrand],options);
     %logrand(1:stocnum) = ye(1,num_states+1:end)';
     
@@ -230,13 +227,21 @@ while t < Tend
        y=ye(1:num_states*num_cells)';
        tau_n=tsol(end)-t;           
        t=te;
-       r=stochreactions(ie);
-       if r > stocnum %this means it's cell number 2
-           r = r-stocnum;
+       
+       if ie >12
+           ie=ie-12;
            cell_num=2;
        else
            cell_num=1;
        end
+       
+       r=stochreactions(ie);
+%        if r > stocnum %this means it's cell number 2
+%            r = r-stocnum;
+%            cell_num=2;
+%        else
+%            cell_num=1;
+%        end
        [y,s] = perform_stochastic_reaction(y,s,r,cell_num);
        logrand=ye(num_states*num_cells+1:end)';
        logrand(ie)=log(rand);   %changing the random number of ie?

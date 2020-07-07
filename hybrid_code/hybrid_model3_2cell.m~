@@ -112,8 +112,8 @@ end
 function [value,isterminal,direction] = events(t,y)
     value      = y(num_states* num_cells+1:end); %which means the whole of 
     %the logrand part of y
-    isterminal = ones(size(stochreactions,2)*2);
-    direction  = ones(size(stochreactions,2)*2);
+    isterminal = ones(size(stochreactions,2)*2,1);
+    direction  = ones(size(stochreactions,2)*2,1);
 end
     
 function s = start_delayed_reaction(r,s,cell_num)
@@ -194,9 +194,12 @@ function s = start_delayed_reaction(r,s,cell_num)
         %([1-partition;1-partition].*a) = 2*num_reactions x 1
         a_cell1=a(1:num_reactions);
         a_cell2=a(num_reactions+1:end); 
+        disp('size(a_cell1)=')
+        disp(size(a_cell1));
+        disp('size(a_cell2)=')
+        disp(size(a_cell2));
+        disp(stochreactions);
         ydot=[R*((1-partition).*a_cell1);R*((1-partition).*a_cell2); a_cell1(stochreactions);a_cell2(stochreactions)]; %sum of stochastic propensities
-        ydot
-        size(ydot)
     end
 
 
@@ -210,7 +213,7 @@ stocnum = size(stochreactions,2); %returns the length of dimension 2 of stochrea
 global logrand;
 
 logrand=log(rand(stocnum*num_cells,1)); %here logrand has 24 rows
-y0 = [ones(num_states,1); logrand];
+y0 = [ones(num_cells*num_states,1); logrand];
 y = y0; 
 step=2;
 num_delayed=7; %number of types of delayed reactions per cell
@@ -222,18 +225,34 @@ while t < Tend
         tau_n=1;
     end
     
-    
-    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y(1:2*num_states); logrand],options);
+    disp(tau_n);
+    size([y(1:num_cells*num_states); logrand])
+    disp(size(logrand));
+    disp(num_cells*num_states);
+    [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y(1:num_cells*num_states); logrand],options);
     %logrand(1:stocnum) = ye(1,num_states+1:end)';
     
     if ~isempty(ie) % event occurs
        y=ye(1:num_states*num_cells)';
        tau_n=tsol(end)-t;           
        t=te;
+       
+       if ie >12
+           ie=ie-12;
+           cell_num=2;
+           
+       disp('ie=')
+       disp(ie)
        r=stochreactions(ie);
+       if r > stocnum %this means it's cell number 2
+           r = r-stocnum;
+           cell_num=2;
+       else
+           cell_num=1;
+       end
        [y,s] = perform_stochastic_reaction(y,s,r,cell_num);
        logrand=ye(num_states*num_cells+1:end)';
-       logrand(ie)=log(rand);   %changing the 
+       logrand(ie)=log(rand);   %changing the random number of ie?
             if length(ie) > 1 || ie>num_states*num_cells
              error('ODEsolution:Events','\nMore than one event detected.');
             end
@@ -241,22 +260,22 @@ while t < Tend
         y=ysol(end,1:num_states*num_cells)';
         
         if reaction > num_delayed %this means it's cell number 2
-        reaction = reaction-num_delayed;
-        cell_num=2;
-    else
-        cell_num=1;
-    end
+            reaction = reaction-num_delayed;
+            cell_num=2;
+        else
+            cell_num=1;
+        end
     
-    if reaction==7
-        reaction=8;
-    end
+        if reaction==7
+            reaction=8;
+        end
         %so y has only the states of the two cells and not the random
         %number
         t=tsol(end,1);
         logrand=ysol(end,num_states*num_cells+1:end)';
         
         [y,s] = end_delayed_reaction(y,s,reaction,cell_num);
-    end    
+    end
     
     %need to add logrand to y
     for cell_num=1:num_cells
