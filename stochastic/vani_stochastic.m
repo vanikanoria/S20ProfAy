@@ -1,3 +1,5 @@
+%one-cell system without dependency structure
+
 nrun=1;%30;
 RHO1=zeros([nrun,1]); PVAL1=zeros([nrun,1]);
 RHO2=zeros([nrun,1]); PVAL2=zeros([nrun,1]);

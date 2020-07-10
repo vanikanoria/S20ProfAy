@@ -7,8 +7,6 @@
 %  The program tries to find parameter sets which replicate the behavior of the system in wild type
 %  and several mutants.
 
-
-
 function[f,g] = vani_deterministic(x)
 %size of x according to isres = (PopSize,number of parameters)
 global Cutoff;
@@ -87,11 +85,11 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
     
     % ---- Delta mutant ----
     
-%     wt_psd = param_set_wt(k,4);
-%     param_set_wt(k,4) = 0; %mutant condition : setting psd=0
+%     wt_psd = param_set_wt(1,4);
+%     param_set_wt(1,4) = 0; %mutant condition : setting psd=0
     mh1_delta = deterministic_model(param_set_wt(k,2,:));
     if length(mh1_delta)==timesteps
-        % this means the model works for the mutant conditions
+        % this means the model wor1s for the mutant conditions
         [dperiod, damplitude]= findPeriodandAmplitude(mh1_delta);
         
         %amplitude condition to be satisfied for the mutant
@@ -109,12 +107,12 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
 %             fprintf(delta_mutant_amplitude);
 %         end
     end
-%     param_set_wt(k,4) = wt_psd; %returning parameter set to WT conditions
+%     param_set_wt(1,4) = wt_psd; %returning parameter set to WT conditions
     
     % ---- Her1 mutant ----
     
-%     wt_psh1 = param_set_wt(k,1);
-%     param_set_wt(k,1) = 0; %mutant condition : setting psh1=0
+%     wt_psh1 = param_set_wt(1,1);
+%     param_set_wt(1,1) = 0; %mutant condition : setting psh1=0
     mh1_h1 = deterministic_model(param_set_wt(k,3,:));
     if length(mh1_h1)==timesteps
         % this means the model works for the mutant conditions
@@ -135,12 +133,12 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
 %             fprintf(her1_mutant_period);
 %         end
     end
-%     param_set_wt(k,1) = wt_psh1; %returning parameter set to WT conditions
+%     param_set_wt(1,1) = wt_psh1; %returning parameter set to WT conditions
 %     
     % ---- Her7 mutant ----
     
-%     wt_psh7 = param_set_wt(k,3);
-%     param_set_wt(k,3) = 0; %mutant condition : setting psh7=0
+%     wt_psh7 = param_set_wt(1,3);
+%     param_set_wt(1,3) = 0; %mutant condition : setting psh7=0
     mh1_h7 = deterministic_model(param_set_wt(k,4,:));
     if length(mh1_h7)==timesteps
         [h7period, h7amplitude]= findPeriodandAmplitude(mh1_h7);
@@ -158,12 +156,12 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
 %             fprintf(her7_mutant_period);
 %         end
     end
-%     param_set_wt(k,3) = wt_psh7; %returning parameter set to WT conditions
+%     param_set_wt(1,3) = wt_psh7; %returning parameter set to WT conditions
     
     % ---- Her6 mutant ----
     
-%     wt_psh6 = param_set_wt(k,2);
-%     param_set_wt(k,2) = 0; %mutant condition : setting psh7=0
+%     wt_psh6 = param_set_wt(1,2);
+%     param_set_wt(1,2) = 0; %mutant condition : setting psh7=0
     mh1_h6 = deterministic_model(param_set_wt(k,5,:));
     
     if length(mh1_h6)==timesteps
@@ -182,14 +180,14 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
 %             fprintf(her6_mutant_period);
 %         end
     end
-%     param_set_wt(k,2) = wt_psh6; %returning parameter set to WT conditions
+%     param_set_wt(1,2) = wt_psh6; %returning parameter set to WT conditions
     
     % ---- Her6 and Her7 mutant ----
     
-%     wt_psh7 = param_set_wt(k,3);
-%     wt_psh6 = param_set_wt(k,2);
-%     param_set_wt(k,3) = 0;
-%     param_set_wt(k,2) = 0;
+%     wt_psh7 = param_set_wt(1,3);
+%     wt_psh6 = param_set_wt(1,2);
+%     param_set_wt(1,3) = 0;
+%     param_set_wt(1,2) = 0;
     mh1_h76 = deterministic_model(param_set_wt(k,6,:));
     
     if length(mh1_h76)==timesteps
@@ -210,8 +208,8 @@ parfor k=1:testPop % FOR TESTING WE COMMENT OUT
     end
     %returning parameter set to WT conditions - don't need to do for the
     %last iteration
-%     param_set_wt(k,3) = wt_psh7;
-%     param_set_wt(k,2) = wt_psh6;
+%     param_set_wt(1,3) = wt_psh7;
+%     param_set_wt(1,2) = wt_psh6;
 %     
 
     
@@ -227,7 +225,7 @@ end
 for j= 1:testPop
     if f(j)>=Cutoff %%adding the paramter sets that exceed the cutoff fitness score
         fprintf('The parameter set exceeded the cutoff: f(%i) = %f\n',j,f(j));
-        VertGoodSet = [VertGoodSet; x(j,:)]; %#ok<*AGROW>
+        VertGoodSet = [VertGoodSet; x(j,:)]; %#o1<*AGROW>
     end
 %             if f(j)>= Cutoff %don't need this
 %                  dlmwrite('VertSegSets0615.csv',x(j,:),'delimiter',',','-append');

@@ -38,8 +38,8 @@ R = get_R();
 
 psh1=x(1); psh6=x(2);psh7=x(3);psd=x(4);pdh1=x(5);pdh6=x(6);
 pdh7=x(7);pdd=x(8);msh1=x(9);msh6=x(10);msh7=x(11);msd=x(12);
-mdh1=x(13);mdh6=x(14);mdh7=x(15);mdd=x(16);% pdh11=x(17);pdh16=x(18);
-% pdh17=x(19);pdh66=x(20);pdh76=x(21);pdh77=x(22);
+mdh1=x(13);mdh6=x(14);mdh7=x(15);mdd=x(16); pdh11=x(17);pdh16=x(18);
+pdh17=x(19);pdh66=x(20);pdh76=x(21);pdh77=x(22);
 nmh1=x(23);nmh7=x(24);nmd=x(25);nph1=x(26);nph6=x(27);nph7=x(28);npd=x(29);
 dah1h1=x(30);ddh1h1=x(31);dah1h6=x(32);ddh1h6=x(33);dah1h7=x(34);
 ddh1h7=x(35);dah6h6=x(36);ddh6h6=x(37);dah7h6=x(38);ddh7h6=x(39);
@@ -87,12 +87,12 @@ function a = get_propensities(y)
         a(16,ck) = pdh6*ph6(ck); % // Reaction 16: ph6 ->
         a(17,ck) = dah6h6*ph6(ck)*(ph6(ck)-1)/2; % // Reaction 17: ph6+ph6 -> ph66
         a(18,ck) = ddh6h6*ph66(ck); % // Reaction 18: ph66 -> ph6+ph6
-        a(19,ck) = pdh1*ph11(ck); % // Reaction 19: ph11 ->
-        a(20,ck) = pdh1*ph17(ck); % // Reaction 20: ph17 ->
-        a(21,ck) = pdh1*ph16(ck); % // Reaction 21: ph16 ->
-        a(22,ck) = pdh1*ph77(ck); % // Reaction 22: ph77 ->
-        a(23,ck) = pdh1*ph76(ck); % // Reaction 23: ph76 ->
-        a(24,ck) = pdh1*ph66(ck); % // Reaction 24: ph66 ->
+        a(19,ck) = pdh11*ph11(ck); % // Reaction 19: ph11 ->
+        a(20,ck) = pdh17*ph17(ck); % // Reaction 20: ph17 ->
+        a(21,ck) = pdh16*ph16(ck); % // Reaction 21: ph16 ->
+        a(22,ck) = pdh77*ph77(ck); % // Reaction 22: ph77 ->
+        a(23,ck) = pdh76*ph76(ck); % // Reaction 23: ph76 ->
+        a(24,ck) = pdh66*ph66(ck); % // Reaction 24: ph66 ->
         a(25,ck) = ddh1h1*ph11(ck); %  Reaction 04: ph11 -> ph1+ph1
         a(26,ck) = pdd*pd(ck); % // Reaction 26: pd ->
         a(27,ck) = dah1h7*ph1(ck)*ph7(ck); % Reaction 05: ph1+ph7 -> ph17
