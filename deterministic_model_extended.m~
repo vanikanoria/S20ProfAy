@@ -213,10 +213,6 @@ critpd=param_set(44);
             %                 return false;
             %             }
             
-            % Calculating the propensities of different reactions 
-            % to check that the propensity is not greater than a chosen
-            % maximum propensity
-            
             % 1-8: delayed reactions
             % 9-34: non-delayed reactions
             %             for ck=1:2

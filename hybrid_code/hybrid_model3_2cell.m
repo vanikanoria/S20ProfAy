@@ -212,6 +212,8 @@ y0 = [ones(num_cells*num_states,1); logrand];
 y = y0; 
 step=2;
 num_delayed=7; %number of types of delayed reactions per cell
+index=0;
+
 while t < Tend
     
     [tau_n, reaction] = min([s{1,1}(1),s{2,1}(1),s{3,1}(1),s{4,1}(1),s{5,1}(1),s{6,1}(1),s{8,1}(1),s{1,2}(1),s{2,2}(1),s{3,2}(1),s{4,2}(1),s{5,2}(1),s{6,2}(1),s{8,2}(1)]);
@@ -224,18 +226,35 @@ while t < Tend
     %logrand(1:stocnum) = ye(1,num_states+1:end)';
     
     if ~isempty(ie) % event occurs
-       y=ye(1:num_states*num_cells)';
-       tau_n=tsol(end)-t;           
-       t=te;
+     
        
-       if ie >12
-           ie=ie-12;
-           cell_num=2;
+       if length(ie) == 1 % this may not be the ideal solution
+           %ideally you should have one event at a time
+           %ie = ie(randperm(length(ie),1));
+           tau_n=tsol(end)-t; 
+           t=te;
+           y=ye(1:num_states*num_cells)';
+           index=1;
        else
-           cell_num=1;
+           [t, index] = min(te);
+           ie = ie(index);
+           y = y(:,index);
+           tau_n=tsol(end)-t;
        end
        
-       r=stochreactions(ie);
+%         if length(ie) > 1 || ie>num_states*num_cells
+%              error('ODEsolution:Events','\nMore than one event detected.');
+%         end
+
+if ie >12
+    ie=ie-12;
+    cell_num=2;
+else
+    cell_num=1;
+end
+
+r=stochreactions(ie);
+
 %        if r > stocnum %this means it's cell number 2
 %            r = r-stocnum;
 %            cell_num=2;
@@ -243,11 +262,9 @@ while t < Tend
 %            cell_num=1;
 %        end
        [y,s] = perform_stochastic_reaction(y,s,r,cell_num);
-       logrand=ye(num_states*num_cells+1:end)';
+       logrand=ye(index,num_states*num_cells+1:end)';
        logrand(ie)=log(rand);   %changing the random number of ie?
-            if length(ie) > 1 || ie>num_states*num_cells
-             error('ODEsolution:Events','\nMore than one event detected.');
-            end
+           
     else
         y=ysol(end,1:num_states*num_cells)';
         
@@ -276,8 +293,9 @@ while t < Tend
         end
     end
     
+   
         % write output if necesarry
-        if t/T(step)<1.1&&t/T(step)>0.90
+        if t/T(step)<1.1 && t/T(step)>0.90
             
             Y(step,:)  = y(1:2*num_states);
             step       = step+1;
