@@ -107,6 +107,16 @@ function a = get_propensities(y)
     a=[a(:,1);a(:,2)];
 end
 
+% events function for ode45:
+% The output arguments value, isterminal, and direction are vectors whose 
+% ith element corresponds to the ith event:
+% value(i) is a mathematical expression describing the ith event. 
+% An event occurs when value(i) is equal to zero. 
+% isterminal(i) = 1 if the integration is to terminate when the ith event occurs.
+% Otherwise, it is 0.
+% direction(i) = 0 if all zeros are to be located (the default).
+% A value of +1 locates only zeros where the event function is increasing, 
+% and -1 locates only zeros where the event function is decreasing.
 function [value,isterminal,direction] = events(t,y)
     value      = y(end); %log(rand)
     isterminal = 1;
@@ -199,7 +209,7 @@ end
     end
      
 Y=zeros(num_steps, num_states*2);
-% set ode options
+% set ode options 
 % options1 = odeset('Events',@events);
 % options2 = odeset('NonNegative',1:num_states);
 options3 = odeset('NonNegative',1:num_states*2,'Events',@events);
@@ -246,6 +256,8 @@ while t < Tend
     
     %when tau_n becomes reasonable
     [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y;logrand],options3);
+    % find te until next stochastic reaction or integrate until the end of
+    % the step
     
     if ~isempty(ie)
        y=ye(1:num_states*2)';

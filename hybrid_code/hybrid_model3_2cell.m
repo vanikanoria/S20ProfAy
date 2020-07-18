@@ -15,7 +15,7 @@ global Td;
 Td = ones(8,num_cells); % Number of scheduled delayed reactions by reaction number.
 
 % Choose time discretization of output (w.r.t. minutes)
-minutes=100;%600;
+minutes=200;%600;
 step=1; % Step size at which data is stored (1 minute)
 num_steps=minutes/step;
 Tend=minutes; % More clear variable name;
@@ -62,7 +62,7 @@ function a = get_propensities(y)
     
     % The different molecule types are: 
     % [ph1;ph7;ph6,pd;mh1;mh7;mh6;md;ph11;ph76;ph17;ph16;ph77;ph66]
-    ph1=[y(1),y(1+diff)];ph7=[y(2),y(2+diff)];ph6=[y(3),y(3+diff)];pd=[y(4),y(4+diff)];mh1=[y(5),y(4+diff)];mh7=[y(6),y(6+diff)];mh6=[y(7),y(7+diff)];md=[y(8),y(8+diff)];
+    ph1=[y(1),y(1+diff)];ph7=[y(2),y(2+diff)];ph6=[y(3),y(3+diff)];pd=[y(4),y(4+diff)];mh1=[y(5),y(5+diff)];mh7=[y(6),y(6+diff)];mh6=[y(7),y(7+diff)];md=[y(8),y(8+diff)];
     ph11=[y(9),y(9+diff)];ph76=[y(10),y(10+diff)];ph17=[y(11),y(11+diff)];ph16=[y(12),y(12+diff)];ph77=[y(13),y(13+diff)];ph66=[y(14),y(14+diff)];
     
     %In case of num_cells=[2: we take pd levels of the other cell into

@@ -2,9 +2,12 @@ function R = get_R()
     num_states = 14;
     num_reactions = 34;
       R = sparse(num_states, num_reactions);
-    % net changes in species levels caused by firing of the reactions 
-    % (1st dimension states, 2nd dimension reaction)
+    % returns a matrix of net changes in species levels caused by firing of
+    % the reactions 
+    % (1st dimension: states, 2nd dimension: reaction)
     
+   % e.g. R(2,20) = -1 represents that the second state is changed by -1
+   % units when the second reaction is fired.
     R(1,1)=1;
     R(2,2)=1;
     R(3,3)=1;

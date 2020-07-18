@@ -1,75 +1,61 @@
-nrun=1;%30;
-RHO1=zeros([nrun,1]); PVAL1=zeros([nrun,1]);
-RHO2=zeros([nrun,1]); PVAL2=zeros([nrun,1]);
-RHO3=zeros([nrun,1]); PVAL3=zeros([nrun,1]);
+%fully stochastic - one cell version
 
-for run=1:nrun 
-maxi=10000000; % Maximum number of iterations to run.
-tend=40; %240; % Maximum time for simulation.
+function Data = vani_stochastic_v1(param_set)
+
+psh1=param_set(1); 
+psh6=param_set(2);
+psh7=param_set(3);
+psd=param_set(4);
+pdh1=param_set(5);
+pdh6=param_set(6);
+pdh7=param_set(7);
+pdd=param_set(8);
+msh1=param_set(9);
+msh6=param_set(10);
+msh7=param_set(11);
+msd=param_set(12);
+mdh1=param_set(13);
+mdh6=param_set(14);
+mdh7=param_set(15);
+mdd=param_set(16);
+pdh11=param_set(17);
+pdh16=param_set(18);
+pdh17=param_set(19);
+pdh66=param_set(20);
+pdh76=param_set(21);
+pdh77=param_set(22);
+nmh1=param_set(23);
+nmh7=param_set(24);
+nmd=param_set(25);
+nph1=param_set(26);
+nph6=param_set(27);
+nph7=param_set(28);
+npd=param_set(29);
+dah1h1=param_set(30);
+ddh1h1=param_set(31);
+dah1h6=param_set(32);
+ddh1h6=param_set(33);
+dah1h7=param_set(34);
+ddh1h7=param_set(35);
+dah6h6=param_set(36);
+ddh6h6=param_set(37);
+dah7h6=param_set(38);
+ddh7h6=param_set(39);
+dah7h7=param_set(40);
+ddh7h7=param_set(41);
+critph11=param_set(42);
+critph76=param_set(43);
+critpd=param_set(44);
+nmh6=0;
+
+maxi=1000000000; % Maximum number of iterations to run.
+tend=100; %240; % Maximum time for simulation.
 format compact 
 % rand('state',sum(100*clock)) 
-rand('state',run) % Sets random number generator to a specific state.
+%rand('state',run) % Sets random number generator to a specific state.
 
 Time=[0]; % Simulation time  
 mh1v=[0]; % Her1 mRNA levels
-mh7v=[0]; % Her7 mRNA levels
-
-% % Reaction rates in prev model
-% msh1=5; msh7=5; mdh1=0.2; mdh7=0.2; % mRNA synthesis and degradation rates.
-% 
-% psh1=5; psh7=5; pdh1=0.3; pdh7=0.3; % Protein synthesis and degradation rates.
-
-% ac1h1h1=0.01; dc1h1h1=400; % DNA association and dissocation rates.
-% ac2h1h1=0.01; dc2h1h1=400;
-% ac1h6h7=0.01; dc1h6h7=400;
-% ac2h6h7=0.01; dc2h6h7=400;
-
-% % Parameter values used in the 2013 study (from Table S1)
-psh1=49.9139;
-psh6=34.3117;
-psh7=28.5626;
-psd=37.7828;
-pdh1=0.34951;
-pdh6=0.14824;
-pdh7=0.249715;
-pdd=0.324316;
-msh1=48.3084;
-msh6=36.4073;
-msh7=39.685;
-msd=60.5577;
-mdh1=0.322965;
-mdh6=0.146372;
-mdh7=0.381738;
-mdd=0.352056;
-pdh11=0.390961;
-pdh16=0.29774;
-pdh17=0.320157;
-pdh66=0.268042;
-pdh67=0.352037;
-pdh77=0.251601;
-nmh1=10.0213;
-nmh6=10;
-nmh7=10.4515;
-nmd=7.74472;
-nph1=1.5398;
-nph6=0.886233;
-nph7=0.539972;
-npd=13.2661;
-dah1h1=0.0179429;
-ddh1h1=0.220856;
-dah1h6=0.0270209;
-ddh1h6=0.0917567;
-dah1h7=0.00120525;
-ddh1h7=0.258167;
-dah6h6=0.0148271;
-ddh6h6=0.251173;
-dah7h6=0.0216093;
-ddh7h6=0.188923;
-dah7h7=0.0202756;
-ddh7h7=0.161018;
-critph11=587.298;
-critph76=769.628;
-critpd=490.254;
 
 % Data storage for delayed reaction times
 s1 = [inf]; % Time for each delayed reaction is scheduled in these vectors.
@@ -115,7 +101,11 @@ for i=1:34
 end
 
 for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
-    
+  
+  if mod(i,100000)==0
+      disp(T);
+  end
+  
   if T >= tend % If the simulation time passes tend finish the run.
     break
   end
@@ -381,32 +371,17 @@ a(34) = mdd*md; %// Reaction 34: md ->
     
     Time=[Time T]; % Store time, and mh1 and mh7 levels.
     mh1v=[mh1v mh1];
-    mh7v=[mh7v mh7];
 end % for i=1:maxi-1,
 
-Data = [Time' mh1v' mh7v'];
-DataTable=table(Time', mh1v', mh7v','VariableNames', {'Time', 'mh1','mh7'});
-writetable(DataTable, strcat('Run', num2str(run),'.xlsx'),'WriteVariableNames', true);
+Data = [Time' mh1v'];
+% DataTable=table(Time', mh1v', mh7v','VariableNames', {'Time', 'mh1','mh7'});
+% writetable(DataTable, strcat('Run', num2str(run),'.xlsx'),'WriteVariableNames', true);
+%sync_score = corr(mh1v, mh7v,'Type','Pearson');
 
-figure
-plot(Time, mh1v,'b')
-hold on
-plot(Time, mh7v,'r')
-legend('Her1','Her7')
-xlabel('Time')
-ylabel('#mRNA')
-saveas(gcf,strcat(['Run', num2str(run)]),'jpg');
-close(gcf);
-
-figure
-histogram(mh1v)
-saveas(gcf,strcat('Run_Histogram', num2str(run)),'jpg');
-close(gcf)
-
-[RHO1(run),PVAL1(run)] = corr(mh1v',mh7v','Type','Pearson');
-[RHO2(run),PVAL2(run)] = corr(mh1v',mh7v','Type','Spearman');
+% figure
+% plot(Time, mh1v,'b')
+% xlabel('Time')
+% ylabel('#mh1')
 
 end
-Stats=table(RHO1, PVAL1, RHO2, PVAL2,'VariableNames', {'Pearson', 'PearSig','Spearman','SpearSig'});
-writetable(Stats, strcat('Run_PearsonSpearman.xlsx'),'WriteVariableNames', true);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

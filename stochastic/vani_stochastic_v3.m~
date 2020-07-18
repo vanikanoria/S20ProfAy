@@ -1,5 +1,6 @@
 % 2-cell system using approximations for dimer formation and degradation
-function [Data, sync_score] = vani_stochastic_v3(param_set)
+
+function [mh1,Time] = vani_stochastic_v3(param_set)
 
 psh1=param_set(1); 
 psh6=param_set(2);
@@ -45,18 +46,17 @@ ddh7h7=param_set(41);
 critph11=param_set(42);
 critph76=param_set(43);
 critpd=param_set(44);
-nmh6=10;
+nmh6=0;
 
 maxi = 10000000; % Maximum number of iterations to run.
-tend = 100; % 240; % Maximum time for simulation.
+tend = 1; % 240; % Maximum time for simulation.
 format compact 
-% rand('state',sum(100*clock)) 
+
 rand('state',1) % Sets random number generator to a specific state.
 
 Time=[0]; % Simulation time  
 mh1v_c1=[0]; % Her1 mRNA levels -> cell 1
 mh1v_c2=[0]; % Her1 mRNA levels -> cell 2
-
 
 % Data storage for delayed reaction times
 % row 1 -> cell 1
@@ -113,10 +113,6 @@ for i=1:maxi-1 % Run the stochastic simulationm for max number of iterations.
     
   if T >= tend % If the simulation time passes tend finish the run.
     break
-  end
-  
-  if mod(i,100000)==0
-      disp(T);
   end
   
 % 1-8: delayed reactions
@@ -312,26 +308,22 @@ end
     Time=[Time T]; % Store time, and mh1 and mh7 levels.
     mh1v_c1=[mh1v_c1 mh1(1)];
     mh1v_c2=[mh1v_c2 mh1(2)];
-    
-    
+   
+    mh7v_c2=[mh7v_c2 mh7(2)];
 end % for i=1:maxi-1,
 
-Data = [Time' mh1v_c1' mh1v_c2'];
-%DataTable=table(Time', mh1v_c1', mh1v_c2','VariableNames', {'Time', 'mh1_cell1', 'mh7_cell1'});
-%writetable(DataTable, strcat('Run_v4', num2str(run),'.xlsx'),'WriteVariableNames', true);
-
-
-sync_score = corr(mh1v_c1,mh1v_c2,'Type','Pearson');
+Data = [Time' mh1v_c1' mh1v_c2' ];
+DataTable=table(Time', mh1v_c1', mh7v_c1', mh1v_c2', mh7v_c2','VariableNames', {'Time', 'mh1_cell1', 'mh7_cell1', 'mh1_cell2', 'mh7_cell2'});
+writetable(DataTable, strcat('Run_v3', num2str(run),'.xlsx'),'WriteVariableNames', true);
 
 % figure
 % plot(Time, mh1v_c1,'b')
 % hold on
-% plot(Time, mh1v_c2,'r')
-% hold on
+% plot(Time, mh1v_c2,'b')
 % 
+% legend('Her1 of cell 1','Her1 of cell 2')
 % xlabel('Time')
 % ylabel('#mRNA')
-%saveas(gcf,strcat(['Run_v2', num2str(run)]),'jpg');
+% %saveas(gcf,strcat(['Run_v2', num2str(run)]),'jpg');
 %close(gcf);
 
-end
