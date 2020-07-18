@@ -6,12 +6,12 @@ totalProcs = 15;
 c = parcluster;
 
 %%
-job171 = c.batch(@maximizeVertSeg,4,{},'Pool',totalProcs,'AttachedFiles',{'/Users/vani/Documents/MATLAB/VertSeg/S20ProfAy/hybrid_code'});
+job189 = c.batch(@maximizeVertSeg,4,{},'Pool',totalProcs,'AttachedFiles',{'/Users/vani/Documents/MATLAB/VertSeg/S20ProfAy/hybrid_code'});
 
 %%
-job171_State = job171.State;
+job189_State = job189.State;
 %job171_Diary = job171.diary;
-job171_Output = job171.fetchOutputs;
+job189_Output = job189.fetchOutputs;
 
 %%
 

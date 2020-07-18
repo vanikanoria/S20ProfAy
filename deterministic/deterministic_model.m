@@ -5,15 +5,15 @@ function mh1 = deterministic_model(param_set)
 %and parameters having values that are biologically possible because if the
 %model attains biologically unfeasible values, it returns period and amplitude as 0
 %thus indicating that the model doesn't work
-
 global time_steps;
 minutes=600; %1200;
 global eps; %time step to be used for Euler's method, default is 0.01
 time_steps = 60000;
+%global constraints_satisfied;
 
 % Set the amount of time steps to be used in the simulation
 max_prop = inf; % maximum threshold for propensity functions, default is INFINITY
-
+failed=false;
 psh1=param_set(1); 
 psh6=param_set(2);
 psh7=param_set(3);
@@ -113,7 +113,6 @@ critpd=param_set(44);
     
     for n = 2:1:time_steps  %% n is an integer
         for i = 1:1:cells
-            
             %//Protein synthesis
             if n>nph1_eps
                 prod_ph1 = psh1*mh1(i,n-nph1_eps);
@@ -233,12 +232,12 @@ critpd=param_set(44);
                 a(ck,16) = pdh6*ph6(ck); % // Reaction 16: ph6 ->
                 a(ck,17) = dah6h6*ph6(ck)*(ph6(ck)-1)/2; % // Reaction 17: ph6+ph6 -> ph66
                 a(ck,18) = ddh6h6*ph66(ck); % // Reaction 18: ph66 -> ph6+ph6
-                a(ck,19) = pdh1*ph11(ck); % // Reaction 19: ph11 ->
-                a(ck,20) = pdh1*ph17(ck); % // Reaction 20: ph17 ->
-                a(ck,21) = pdh1*ph16(ck); % // Reaction 21: ph16 ->
-                a(ck,22) = pdh1*ph77(ck); % // Reaction 22: ph77 ->
-                a(ck,23) = pdh1*ph76(ck); % // Reaction 23: ph76 ->
-                a(ck,24) = pdh1*ph66(ck); % // Reaction 24: ph66 ->
+                a(ck,19) = pdh11*ph11(ck); % // Reaction 19: ph11 ->
+                a(ck,20) = pdh17*ph17(ck); % // Reaction 20: ph17 ->
+                a(ck,21) = pdh16*ph16(ck); % // Reaction 21: ph16 ->
+                a(ck,22) = pdh77*ph77(ck); % // Reaction 22: ph77 ->
+                a(ck,23) = pdh76*ph76(ck); % // Reaction 23: ph76 ->
+                a(ck,24) = pdh66*ph66(ck); % // Reaction 24: ph66 ->
                 a(ck,25) = ddh1h1*ph11(ck); %  Reaction 04: ph11 -> ph1+ph1
                 a(ck,26) = pdd*pd(ck); % // Reaction 26: pd ->
                 a(ck,27) = dah1h7*ph1(ck)*ph7(ck); % Reaction 05: ph1+ph7 -> ph17
@@ -257,8 +256,29 @@ critpd=param_set(44);
 %                 mh1=0;
 %                 return; %will return mh1 as 0
 %             end
-            
+
+%               mRNA constraints
+%         if (n>120) && (mh1(i,n)< 60 || mh1(i,n) > 120 ||mh7(i,n)< 60 || mh7(i,n) > 150 || md(i,n)< 60 || md(i,n) > 150 )
+% %             disp('mRNA too low:');
+% %             disp(mh1(i,n))
+% %             disp(mh7(i,n))
+% %             disp(md(i,n))
+%             mh1=0;
+%             return;
+% if (n>10000) && (mh1(i,n) > 100 || mh7(i,n) > 100 ||md(i,n) > 100)
+%     mh1=0;
+%     return;
+% elseif (n>10000) && (ph1(i,n) > 1000 ||ph7(i,n) > 1000 || pd(i,n) > 1000)
+%     %             disp('protein too low:');
+%     mh1=0;
+%     return;
+% elseif (n>10000) && (ph11(i,n) > 1000 ||ph17(i,n) > 1000 ||ph76(i,n) > 1000 ...
+%         || ph77(i,n) > 1000 || ph66(i,n) > 1000|| ph16(i,n) > 1000)
+%     %             disp('dimer level too low:');
+%     mh1=0;
+%     return;
+% end
         end
-        
-    end  
+    end
+ %   constraints_satisfied=constraints_satisfied+1;
 end

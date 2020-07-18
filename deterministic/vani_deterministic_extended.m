@@ -23,22 +23,11 @@ global Ub;
 global PopSize;
 global time_steps;
 
-% Iterate through every parameter set
-% CHUNK_SIZE = 10000;
-% PARS = 1; % number of parameters to simulate, default value is 1
-% x = 2; y = 1; %width and height of the tissue being simulated, default is 2x1
-%toPrint = false;  % boolean marking whether or not concentrations should be printed to a text file
-
-%mutants = ["/wt", "/delta", "/her6", "/her1", "/her7", "/her76"];
-
 testPop=PopSize;
 f=zeros(PopSize,1);
 timesteps = time_steps;
 % testPop=1; % FOR TESTING WE UNCOMMENT
 %num_of_parameters = 44;
-
-%%%%%%%%%%% NEED TO INITIALIZE GOODSET %%%%%%
-%Goodset = 
 
 %creating a 2-dimensional array to store parameter sets of each population
 %param_sets = zeros(testPop,num_of_parameters);
@@ -55,19 +44,14 @@ wperiod=0;wamplitude=0;
 %parfor k=1:testPop % FOR TESTING WE COMMENT OUT
  for k=1:testPop % FOR TESTING WE UNCOMMENT
     wperiod=0;wamplitude=0;
-    %fprintf("Simulating parameter set %i: \n",k); % Used for creating output file names specific to the paramater
-    
-    % Booleans to see if we met mutant conditions on each iteration
-    %             wt = false; her1_mutant = false; her7_mutant = false; her6_mutant = false;
-    %             her76_mutant = false; delta_mutant = false;
-    
-    %             For the wild type and every mutant, perform the following steps:
-    %              1) Adjust the appropriate protein synthesis rates to create mutants if necessary
-    %              2) Run the simulation
-    %              3) Go to the next parameter set if the propensities for the current one have gone above the set threshold
-    %              4) Otherwise, test oscillation features
-    %              5) Go to the next parameter set if the current one did not produce oscillations or did not satisfy the mutant conditions
-    
+     
+% For the wild type and every mutant, perform the following steps:
+%  1) Adjust the appropriate protein synthesis rates to create mutants if necessary
+%  2) Run the simulation
+%  3) Go to the next parameter set if the propensities for the current one have gone above the set threshold
+%  4) Otherwise, test oscillation features
+%  5) Go to the next parameter set if the current one did not produce oscillations or did not satisfy the mutant conditions
+% 
     
     %----- Wild Type Conditions --------
     mh1_wt=deterministic_model(param_set_wt(k,1,:));
@@ -78,14 +62,11 @@ wperiod=0;wamplitude=0;
         continue;
     end
     if satisfiesWTconditions(mh1_wt)
-       % fprintf('satisfiesWTconditions\n');
         f(k)=f(k)+5;
     end
     if f(k)==5 %% otherwise exit this parameter set?
         [wperiod, wamplitude]= findPeriodandAmplitude(mh1_wt);
         f(k)=f(k)+(wperiod > 29 && wperiod < 31 ); %add a point for satisfying period conditions
-%     else
-%         fprintf('~(wperiod > 29 && wperiod < 31 )')
     end
     
     if satisfies_all_conc_constraints(param_set_wt(k,1,:))
@@ -96,8 +77,6 @@ wperiod=0;wamplitude=0;
     
     % ---- Delta mutant ----
     
-%     wt_psd = param_set_wt(1,4);
-%     param_set_wt(1,4) = 0; %mutant condition : setting psd=0
     mh1_delta = deterministic_model(param_set_wt(k,2,:));
     if length(mh1_delta)==timesteps
         % this means the model wor1s for the mutant conditions
@@ -109,21 +88,10 @@ wperiod=0;wamplitude=0;
         delta_mutant_period = ((dperiod / wperiod) > 1.07) && ((dperiod / wperiod) < 1.20);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+delta_mutant_period + delta_mutant_amplitude;
-%         if ~delta_mutant_period
-%             fprintf('\n~delta_mutant_period:');
-%             fprintf(delta_mutant_period);
-%         end
-%         if ~delta_mutant_amplitude
-%             fprintf('\n~delta_mutant_amplitude:');
-%             fprintf(delta_mutant_amplitude);
-%         end
     end
-%     param_set_wt(1,4) = wt_psd; %returning parameter set to WT conditions
     
     % ---- Her1 mutant ----
     
-%     wt_psh1 = param_set_wt(1,1);
-%     param_set_wt(1,1) = 0; %mutant condition : setting psh1=0
     mh1_h1 = deterministic_model(param_set_wt(k,3,:));
     if length(mh1_h1)==timesteps
         % this means the model works for the mutant conditions
@@ -135,21 +103,9 @@ wperiod=0;wamplitude=0;
         her1_mutant_period = ((h1period/wperiod) > 0.97) && ((h1period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her1_mutant_period + her1_mutant_amplitude;
-%         if ~her1_mutant_amplitude
-%             fprintf('\n~her1_mutant_amplitude:');
-%             fprintf(her1_mutant_amplitude);
-%         end
-%         if ~her1_mutant_period
-%             fprintf('\n~her1_mutant_period:')
-%             fprintf(her1_mutant_period);
-%         end
     end
-%     param_set_wt(1,1) = wt_psh1; %returning parameter set to WT conditions
-%     
     % ---- Her7 mutant ----
     
-%     wt_psh7 = param_set_wt(1,3);
-%     param_set_wt(1,3) = 0; %mutant condition : setting psh7=0
     mh1_h7 = deterministic_model(param_set_wt(k,4,:));
     if length(mh1_h7)==timesteps
         [h7period, h7amplitude]= findPeriodandAmplitude(mh1_h7);
@@ -158,21 +114,11 @@ wperiod=0;wamplitude=0;
         her7_mutant_period = (h7period/wperiod > 0.97) && ((h7period/wperiod) < 1.03);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her7_mutant_period + her7_mutant_amplitude;
-%         if ~her7_mutant_amplitude
-%             fprintf('\n~her7_mutant_amplitude:');
-%             fprintf(her7_mutant_amplitude);
-%         end
-%         if ~her7_mutant_period
-%             fprintf('\n~her7_mutant_period:')
-%             fprintf(her7_mutant_period);
-%         end
     end
 %     param_set_wt(1,3) = wt_psh7; %returning parameter set to WT conditions
     
     % ---- Her6 mutant ----
     
-%     wt_psh6 = param_set_wt(1,2);
-%     param_set_wt(1,2) = 0; %mutant condition : setting psh7=0
     mh1_h6 = deterministic_model(param_set_wt(k,5,:));
     
     if length(mh1_h6)==timesteps
@@ -182,23 +128,9 @@ wperiod=0;wamplitude=0;
         her6_mutant_period = ((h6period / wperiod) > 1.05) && ((h6period / wperiod) < 1.07);
         %add a point for each mutant condition that is satisfied: period and amplitude
         f(k)=f(k)+her6_mutant_period + her6_mutant_amplitude;
-%         if ~her6_mutant_amplitude
-%             fprintf('\n~her6_mutant_amplitude:');
-%             fprintf(her6_mutant_amplitude);
-%         end
-%         if ~her6_mutant_period
-%             fprintf('\n~her6_mutant_period:')
-%             fprintf(her6_mutant_period);
-%         end
     end
-%     param_set_wt(1,2) = wt_psh6; %returning parameter set to WT conditions
     
     % ---- Her6 and Her7 mutant ----
-    
-%     wt_psh7 = param_set_wt(1,3);
-%     wt_psh6 = param_set_wt(1,2);
-%     param_set_wt(1,3) = 0;
-%     param_set_wt(1,2) = 0;
     mh1_h76 = deterministic_model(param_set_wt(k,6,:));
     
     if length(mh1_h76)==timesteps
@@ -208,27 +140,9 @@ wperiod=0;wamplitude=0;
     her76_mutant_period = ((h76period / wperiod) > 1.05) && ((h76period / wperiod) < 1.07);
     %add a point for each mutant condition that is satisfied: period and amplitude
     f(k)=f(k)+her76_mutant_period + her76_mutant_amplitude;
-%     if ~her76_mutant_amplitude
-%         fprintf('\n~her76_mutant_amplitude:');
-%         fprintf(her76_mutant_amplitude);
-%     end
-%     if ~her76_mutant_period
-%         fprintf('\n~her76_mutant_period:')
-%         fprintf(her76_mutant_period);
-%     end
     end
-    %returning parameter set to WT conditions - don't need to do for the
-    %last iteration
-%     param_set_wt(1,3) = wt_psh7;
-%     param_set_wt(1,2) = wt_psh6;
-%     
-
     
-    %  If the paramater set created oscillatory behavior in wild type and all the mutant conditions were satisfied:
-    %  1) Print the appropriate message
-    %  2) Print the oscillation features into the appropriate files
-    %  2) Print the parameter set into the output file containing parameter that passed the conditions.
-    
+   
 end
 
 %Print the parameter set into the output file containing parameter that passed the conditions.

@@ -3,7 +3,7 @@ path('~/Documents/MATLAB/SupportPackages/R2018a/parallel/pbs/nonshared', oldpath
 
 email='vkanoria@colgate.edu'; 
 clusterHost='turing.colgate.edu'; 
-jobStorageLocation='/Users/vani/Desktop/VertSeg/S20ProfAy'; 
+jobStorageLocation='/Users/vani/Documents/MATLAB/VertSeg/S20ProfAy'; 
 remoteJobStorageLocation='/home/vkanoria/Documents';
 
 cluster=parallel.cluster.Generic( 'JobStorageLocation', jobStorageLocation);
