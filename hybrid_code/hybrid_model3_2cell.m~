@@ -227,9 +227,9 @@ while t < Tend
     [tsol,ysol,te,ye,ie] = ode45(@update_ode,[t t+tau_n],[y(1:num_cells*num_states); logrand],options);
     %logrand(1:stocnum) = ye(1,num_states+1:end)';
     
-   
+    logrand
     if ~isempty(ie) % event occurs
-    
+    ie
        if length(ie) == 1 
            tau_n=tsol(end)-t; 
            t=te;
@@ -251,6 +251,7 @@ while t < Tend
 if ie >12
     ie=ie-12;
     cell_num=2;
+    disp('cell2');
 else
     cell_num=1;
 end
@@ -268,14 +269,14 @@ r=stochreactions(ie);
        logrand=ye(index,num_states*num_cells+1:end)';
         
        if cell_num ==2 
-           old_ie = ie+12;
-       else
-           old_ie = ie;
+        old_ie = ie+12;
        end
        
-       logrand(old_ie)=log(rand);   %changing the random number of ie?
+       logrand(ie)=log(rand);   %changing the random number of ie?
        if sum(logrand > 0) > 0
            disp('line 269');
+           logrand
+           ie
            return;
            
        end

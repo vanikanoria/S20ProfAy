@@ -1,6 +1,6 @@
 %fully stochastic - one cell version
 
-function Data = vani_stochastic_v1(param_set)
+function [Data,period,amplitude] = vani_stochastic_v1(param_set)
 
 psh1=param_set(1); 
 psh6=param_set(2);
@@ -374,6 +374,8 @@ a(34) = mdd*md; %// Reaction 34: md ->
 end % for i=1:maxi-1,
 
 Data = [Time' mh1v'];
+[period,amplitude]=findPeriodandAmplitude(Data);
+
 % DataTable=table(Time', mh1v', mh7v','VariableNames', {'Time', 'mh1','mh7'});
 % writetable(DataTable, strcat('Run', num2str(run),'.xlsx'),'WriteVariableNames', true);
 %sync_score = corr(mh1v, mh7v,'Type','Pearson');

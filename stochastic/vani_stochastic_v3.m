@@ -1,5 +1,5 @@
 % 2-cell system using approximations for dimer formation and degradation
-function Data = vani_stochastic_v3(param_set)
+function [Data, sync_score, period, amplitude] = vani_stochastic_v3(param_set)
 
 psh1=param_set(1); 
 psh6=param_set(2);
@@ -317,11 +317,8 @@ end
 end % for i=1:maxi-1,
 
 Data = [Time' mh1v_c1' mh1v_c2'];
-%DataTable=table(Time', mh1v_c1', mh1v_c2','VariableNames', {'Time', 'mh1_cell1', 'mh7_cell1'});
-%writetable(DataTable, strcat('Run_v4', num2str(run),'.xlsx'),'WriteVariableNames', true);
-
-%To find the sync score, type the following into the command window:
-%sync_score = corr(mh1v_c1,mh1v_c2,'Type','Pearson');
+sync_score = corr(mh1v_c1,mh1v_c2,'Type','Pearson');
+period,amplitude]=findPeriodandAmplitude(Data);
 
 % figure
 % plot(Time, mh1v_c1,'b')

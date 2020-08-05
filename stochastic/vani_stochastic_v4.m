@@ -3,7 +3,7 @@
 % ph6 : constant, and no mh6
 % Updating propensities wherever updating concentration
 
-function [Data, sync_score] = vani_stochastic_v4(param_set)
+function [Data, sync_score,period,amplitude] = vani_stochastic_v4(param_set)
 
 psh1=param_set(1); 
 psh6=param_set(2);
@@ -321,8 +321,8 @@ end
 end % for i=1:maxi-1,
 
 Data = [Time' mh1v_c1' mh1v_c2'];
-
 sync_score = corr(mh1v_c1,mh1v_c2,'Type','Pearson');
+[period,amplitude]=findPeriodandAmplitude(Data);
 
 % figure
 % plot(Time, mh1v_c1,'b')

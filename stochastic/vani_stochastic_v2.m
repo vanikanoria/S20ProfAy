@@ -1,7 +1,7 @@
 % 2-cell system without dimer approximation
 % without dependency structure
 
-function [Data, sync_score] = vani_stochastic_v2(param_set)
+function [Data, sync_score,period,amplitude] = vani_stochastic_v2(param_set)
 
 psh1=param_set(1); 
 psh6=param_set(2);
@@ -396,6 +396,7 @@ end % for i=1:maxi-1,
 
 Data = [Time' mh1v_c1' mh1v_c2'];
 sync_score = corr(mh1v_c1,mh1v_c2,'Type','Pearson');
+[period,amplitude]=findPeriodandAmplitude(Data);
 
 % figure
 % plot(Time, mh1v_c1,'b')
